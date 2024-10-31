@@ -1,6 +1,6 @@
 "use client";
 import { useConfirm } from "@/hooks/use-confirm";
-import { Category, Cuisines, Kitchen, Product, Size } from "@/types-db";
+import { Category, Product, Size } from "@/types-db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";

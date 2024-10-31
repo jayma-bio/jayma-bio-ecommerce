@@ -34,22 +34,6 @@ export interface Size {
   updatedAt: Timestamp;
 }
 
-export interface Kitchen {
-  id: string;
-  categoryId: string;
-  name: string;
-  value: string;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-}
-
-export interface Cuisines {
-  id: string;
-  name: string;
-  value: string;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-}
 
 export interface Product {
   id: string;
@@ -61,8 +45,6 @@ export interface Product {
   isArchived: boolean;
   category: string;
   size?: string;
-  kitchen?: string;
-  cuisine?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

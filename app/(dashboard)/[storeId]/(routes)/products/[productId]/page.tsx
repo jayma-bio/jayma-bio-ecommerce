@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { Category, Cuisines, Kitchen, Product, Size } from "@/types-db";
+import { Category, Product, Size } from "@/types-db";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 import React from "react";
