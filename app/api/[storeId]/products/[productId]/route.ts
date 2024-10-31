@@ -1,5 +1,5 @@
 import { db, storage } from "@/lib/firebase";
-import { Product, Size } from "@/types-db";
+import { Product } from "@/types-db";
 import { auth } from "@clerk/nextjs/server";
 import {
   deleteDoc,
@@ -23,18 +23,8 @@ export const PATCH = async (
       return new NextResponse("Unauthorized", { status: 400 });
     }
 
-    const {
-      name,
-      price,
-      images,
-      isFeatured,
-      isArchived,
-      category,
-      kitchen,
-      cuisine,
-      size,
-      qty,
-    } = body;
+    const { name, price, images, isFeatured, isArchived, category, size, qty } =
+      body;
 
     if (!name) {
       return new NextResponse("Product name is required/missing", {
@@ -59,7 +49,6 @@ export const PATCH = async (
         status: 400,
       });
     }
-
 
     if (!params.storeId) {
       return new NextResponse("Store ID is required/missing", { status: 400 });
@@ -94,8 +83,6 @@ export const PATCH = async (
           isFeatured,
           isArchived,
           category,
-          kitchen,
-          cuisine,
           size,
           qty,
           updatedAt: serverTimestamp(),
