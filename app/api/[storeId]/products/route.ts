@@ -27,7 +27,7 @@ export const POST = async (
       return new NextResponse("Unauthorized", { status: 400 });
     }
 
-    const { name, price, images, isFeatured, isArchived, category, size, qty } =
+    const { name, price, images, isFeatured, isArchived, category, size, qty, description, discount } =
       body;
 
     if (!name) {
@@ -69,7 +69,9 @@ export const POST = async (
 
     const productsData = {
       name,
+      description,
       price,
+      discount,
       images,
       isFeatured,
       isArchived,

@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ImagesUpload } from "@/components/shared/images-uploader";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ProductFormProps {
   initialData: Product;
@@ -68,7 +69,9 @@ export const ProductForm = ({
     resolver: zodResolver(ProductFormSchema),
     defaultValues: initialData || {
       name: "",
+      description: "",
       price: 0,
+      discount: 0,
       qty: 0,
       category: "",
       size: "",
@@ -223,6 +226,24 @@ export const ProductForm = ({
             />
             <FormField
               control={form.control}
+              name="discount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Discount Percentage (%)</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={isLoading}
+                      placeholder="45%"
+                      {...field}
+                      type="number"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="qty"
               render={({ field }) => (
                 <FormItem>
@@ -301,6 +322,24 @@ export const ProductForm = ({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="">
+                  <FormLabel>Product Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      disabled={isLoading}
+                      placeholder="product description..."
+                      className="resize-none h-[100px] overscroll-y-scroll"
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
