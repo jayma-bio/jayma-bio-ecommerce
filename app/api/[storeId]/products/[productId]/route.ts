@@ -23,8 +23,18 @@ export const PATCH = async (
       return new NextResponse("Unauthorized", { status: 400 });
     }
 
-    const { name, price, images, isFeatured, isArchived, category, size, qty } =
-      body;
+    const {
+      name,
+      description,
+      price,
+      discount,
+      images,
+      isFeatured,
+      isArchived,
+      category,
+      size,
+      qty,
+    } = body;
 
     if (!name) {
       return new NextResponse("Product name is required/missing", {
@@ -78,7 +88,9 @@ export const PATCH = async (
         {
           ...productRef.data(),
           name,
+          description,
           price,
+          discount,
           images,
           isFeatured,
           isArchived,
