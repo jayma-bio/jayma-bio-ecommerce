@@ -34,9 +34,9 @@ export const SizesClient = ({ data }: SizeClientProps) => {
       <Separator />
       <DataTable columns={columns} data={data} searchKey="name" />
 
-      <Heading title="API" description="API calls for sizes" />
-      <Separator />
-      <ApiList entityName="sizes" entityNameId="sizeId" />
+      {/* <Heading title="API" description="API calls for sizes" />
+      <Separator /> */}
+      {/* <ApiList entityName="sizes" entityNameId="sizeId" /> */}
     </>
   );
 };
