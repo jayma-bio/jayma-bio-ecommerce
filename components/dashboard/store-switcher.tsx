@@ -73,7 +73,7 @@ export const StoreSwitcher = ({ items }: StoreSwitcherProps) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[300px] justify-between"
         >
           <StoreIcon className="mr-2 h-4 w-4" />
           {currentStore?.value
@@ -84,7 +84,7 @@ export const StoreSwitcher = ({ items }: StoreSwitcherProps) => {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[300px] p-0">
         <Command>
           <div className="w-full px-2 py-1 flex items-center border rounded-md border-gray-100">
             <StoreIcon className="mr-2 h-4 w-4 shrink-0 min-w-4" />
