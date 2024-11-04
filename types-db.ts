@@ -34,7 +34,6 @@ export interface Size {
   updatedAt: Timestamp;
 }
 
-
 export interface Product {
   id: string;
   name: string;
@@ -53,9 +52,13 @@ export interface Order {
   id: string;
   isPaid: boolean;
   phone: string;
+  email: string;
   orderItems: Product[];
   address: string;
   order_status: string;
+  amount: number;
+  sent_email: boolean;
+  paymentId: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
