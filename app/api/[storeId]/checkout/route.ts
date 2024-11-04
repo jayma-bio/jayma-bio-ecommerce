@@ -26,7 +26,7 @@ const corsHeaders = {
 
 function handleCORS(request: NextRequest) {
   const origin = request.headers.get("origin") || "";
-
+  
   // Check if the origin is in our allowed list
   if (allowedOrigins.includes(origin)) {
     corsHeaders["Access-Control-Allow-Origin"] = origin;
