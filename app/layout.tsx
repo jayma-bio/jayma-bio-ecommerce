@@ -5,7 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ModalProvider } from "@/providers/modal-provider";
 import { Toaster } from "@/components/ui/sonner";
 import NextTopLoader from "nextjs-toploader";
-
+import Script from "next/script";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -34,6 +34,7 @@ export default function RootLayout({
           <NextTopLoader color="#0D2A25" />
           {children}
           <Toaster />
+          <Script src="https://sdk.cashfree.com/js/v3/cashfree.js"></Script>
         </body>
       </html>
     </ClerkProvider>
