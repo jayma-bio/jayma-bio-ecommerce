@@ -73,7 +73,7 @@ export async function POST(
       phone,
       address,
       amount: paymentPrice,
-      order_status: "Processing",
+      order_status: "Payment Processing",
       createdAt: serverTimestamp(),
     };
 
@@ -137,11 +137,11 @@ export async function POST(
     // }
 
     const data = await Cashfree.PGCreateOrder("2023-08-01", payload)
-      .then((response) => {
+      .then((response: { data: any }) => {
         console.log("Order created successfully:", response.data);
         return response.data;
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error("Error:", error.response.data.message);
         return null;
       });
