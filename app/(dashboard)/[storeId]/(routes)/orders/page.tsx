@@ -29,6 +29,7 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
     images: item.orderItems.map((item) => item.images[0].url),
     createdAt:
       item.createdAt && format(item.createdAt.toDate(), "MMMM do, yyyy"),
+    payment_id: item.paymentId,
   }));
 
   return (
