@@ -19,13 +19,20 @@ export async function POST(
   try {
     const { orderId, paymentId, status } = await req.json();
 
-    await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
-      isPaid: status === "SUCCESS" && true,
-      paymentId: paymentId,
-      order_status: status === "SUCCESS" ? "Payment Successful" : "Failed",
-      updatedAt: serverTimestamp(),
-    });
-
+    if (status === "success") {
+      await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
+        isPaid: true,
+        paymentId: paymentId,
+        order_status: "Payment Successful",
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
+        order_status: "Payment Failed",
+        updatedAt: serverTimestamp(),
+      });
+    }
+    
     return NextResponse.json(
       { message: "Db updated", status: 200 },
       { headers: corsHeaders }
