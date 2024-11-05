@@ -12,7 +12,7 @@ export const CellImage = ({ data }: CellImageProps) => {
       {data.map((url, index) => (
         <div
           key={index}
-          className="overflow-hidden min-h-16 min-w-16 w-full h-full aspect-square rounded-md flex items-center justify-center"
+          className="overflow-hidden min-h-16 min-w-16 w-full h-full aspect-square rounded-md flex items-center justify-center relative"
         >
           <Image
             src={url}

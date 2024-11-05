@@ -23,7 +23,7 @@ export async function POST(
       await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
         isPaid: true,
         paymentId: paymentId,
-        order_status: "Payment Successful",
+        order_status: "Payment Successfull",
         updatedAt: serverTimestamp(),
       });
     } else {
@@ -32,7 +32,7 @@ export async function POST(
         updatedAt: serverTimestamp(),
       });
     }
-    
+
     return NextResponse.json(
       { message: "Db updated", status: 200 },
       { headers: corsHeaders }

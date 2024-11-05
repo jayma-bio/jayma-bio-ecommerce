@@ -6,6 +6,8 @@ import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CellAction } from "./cell-action";
 import { CellImage } from "./cell-image";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export type OrdersColumns = {
   id: string;
@@ -17,6 +19,7 @@ export type OrdersColumns = {
   isPaid: boolean;
   order_status: string;
   createdAt: string;
+  payment_id: string;
 };
 
 export const columns: ColumnDef<OrdersColumns>[] = [
@@ -25,7 +28,14 @@ export const columns: ColumnDef<OrdersColumns>[] = [
     header: "Images",
     cell: ({ row }) => (
       <div className="grid grid-cols-2 gap-2">
-        <CellImage data={row.original.images} />
+        <div className="overflow-hidden min-h-16 min-w-16 w-full h-full aspect-square rounded-md flex items-center justify-center relative">
+          <Image
+            src={row.original.images[0]}
+            alt="product image"
+            className="object-contain"
+            fill
+          />
+        </div>
       </div>
     ),
   },
@@ -34,17 +44,57 @@ export const columns: ColumnDef<OrdersColumns>[] = [
     header: "Phone",
   },
   {
-    accessorKey: "address",
-    header: "Address",
-  },
-  {
     accessorKey: "totalPrice",
     header: "Amount",
   },
   {
-    accessorKey: "isPaid",
-    header: "Payment Status",
+    accessorKey: "id",
+    header: "Order ID",
   },
+  {
+    accessorKey: "order_status",
+    header: "Status",
+    cell: ({ row }) => {
+      const { order_status } = row.original;
+
+      return (
+        <p
+          className={cn(
+            "text-sm font-medium",
+            order_status === "Order Confirmed" && "text-emerald-600",
+            order_status === "Order Delivered" && "text-green",
+            order_status === "Order Cancelled" && "text-red-600",
+            order_status === "Order Processing" && "text-yellow-600",
+            order_status === "Order Delivering" && "text-orange-500",
+            order_status === "Order Shipped" && "text-blue-600",
+            order_status === "Payment Successfull" && "text-emerald-400",
+            order_status === "Payment Failed" && "text-red-600",
+            order_status === "Payment Processing" && "text-yellow-600"
+          )}
+        >
+          {order_status}
+        </p>
+      );
+    },
+  },
+  // {
+  //   accessorKey: "isPaid",
+  //   header: "Payment Status",
+  //   cell: ({ row }) => {
+  //     const { isPaid } = row.original;
+
+  //     return (
+  //       <p
+  //         className={cn(
+  //           "text-sm font-medium",
+  //           isPaid ? "text-emerald-500" : "text-red-500"
+  //         )}
+  //       >
+  //         {isPaid ? "Paid" : "Not Paid"}
+  //       </p>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "products",
     header: "Products",
