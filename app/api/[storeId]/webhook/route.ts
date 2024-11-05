@@ -19,7 +19,7 @@ export async function POST(
   try {
     const { orderId, paymentId, status } = await req.json();
 
-    if (status === "success") {
+    if (status === "success" || status === "SUCCESS") {
       await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
         isPaid: true,
         paymentId: paymentId,
