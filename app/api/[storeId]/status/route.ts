@@ -1,5 +1,3 @@
-import { db } from "@/lib/firebase";
-import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
 const corsHeaders = {
@@ -35,16 +33,9 @@ export async function POST(
     const data = await response.json();
 
     console.log(data);
-
-    await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
-      isPaid: true,
-      paymentId: data[0].cf_payment_id,
-      order_status: "Payment Successful",
-      updatedAt: serverTimestamp(),
-    });
-
+    
     return NextResponse.json(
-      { message: "Db updated", status: 200 },
+      { data: data, status: 200 },
       { headers: corsHeaders }
     );
   } catch (error) {

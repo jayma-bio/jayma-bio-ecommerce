@@ -14,6 +14,8 @@ const allowedOrigins = [
   "https://www.jaymabioinnovations.com",
   "https://checkout.jaymabioinnovations.com",
   "https://www.checkout.jaymabioinnovations.com",
+  "http://localhost:3000",
+  "http://localhost:5173",
 ];
 
 const corsHeaders = {
@@ -27,18 +29,16 @@ const corsHeaders = {
 function handleCORS(request: NextRequest) {
   const origin = request.headers.get("origin") || "";
   
-  // Check if the origin is in our allowed list
   if (allowedOrigins.includes(origin)) {
     corsHeaders["Access-Control-Allow-Origin"] = origin;
   } else {
     corsHeaders["Access-Control-Allow-Origin"] = allowedOrigins[0];
   }
 
-  // Handle preflight requests
   if (request.method === "OPTIONS") {
     return NextResponse.json({}, { headers: corsHeaders });
   }
-
+  
   return null;
 }
 
@@ -46,13 +46,20 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { storeId: string } }
 ) {
-  // Handle CORS preflight
   const corsResult = handleCORS(req);
   if (corsResult) return corsResult;
 
   try {
     const { products, userId, paymentPrice, name, email, phone, address } =
       await req.json();
+
+    // Validate required fields
+    if (!products || !paymentPrice || !email || !phone || !address) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400, headers: corsHeaders }
+      );
+    }
 
     const orderData = {
       isPaid: false,
@@ -90,6 +97,10 @@ export async function POST(
       order_currency: "INR",
     };
 
+    // Log the request to Cashfree
+    console.log("Cashfree Request Payload:", payload);
+    console.log("Cashfree URL:", process.env.CASHFREE_FETCH_URL);
+
     const response = await fetch(process.env.CASHFREE_FETCH_URL as string, {
       method: "POST",
       headers: {
@@ -102,14 +113,35 @@ export async function POST(
       body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
-    const url = `${process.env.PAYMENT_URL}?session_id=${data.payment_session_id}&store_id=${params.storeId}&order_id=${id}`;
+    if (!response.ok) {
+      console.error("Cashfree API Error:", await response.text());
+      throw new Error(`Cashfree API error: ${response.status}`);
+    }
 
-    return NextResponse.json({ url: url }, { headers: corsHeaders });
+    const data = await response.json();
+
+    // Log Cashfree response
+    console.log("Cashfree Response:", data);
+
+    if (!data.payment_session_id) {
+      console.error("No payment_session_id in response:", data);
+      throw new Error("Missing payment_session_id in Cashfree response");
+    }
+
+    // Construct URL with error handling
+    const paymentUrl = new URL(process.env.PAYMENT_URL || "");
+    paymentUrl.searchParams.append("session_id", data.payment_session_id);
+    paymentUrl.searchParams.append("store_id", params.storeId);
+    paymentUrl.searchParams.append("order_id", id);
+
+    return NextResponse.json(
+      { url: paymentUrl.toString() },
+      { headers: corsHeaders }
+    );
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Internal Server Error", details: (error as Error).message },
       { status: 500, headers: corsHeaders }
     );
   }
