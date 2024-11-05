@@ -172,7 +172,7 @@ export const CellAction = ({ data }: CellActionProps) => {
             <Copy className="w-4 h-4 mr-2" />
             Copy Id
           </DropdownMenuItem>
-          {data.order_status === "Payment Successful" && (
+          {data.order_status === "Payment Successfull" && (
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={() => setIsDialogOpen(true)}
