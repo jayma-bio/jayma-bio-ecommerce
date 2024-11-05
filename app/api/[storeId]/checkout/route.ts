@@ -28,7 +28,7 @@ const corsHeaders = {
 
 function handleCORS(request: NextRequest) {
   const origin = request.headers.get("origin") || "";
-
+  
   if (allowedOrigins.includes(origin)) {
     corsHeaders["Access-Control-Allow-Origin"] = origin;
   } else {
@@ -38,7 +38,7 @@ function handleCORS(request: NextRequest) {
   if (request.method === "OPTIONS") {
     return NextResponse.json({}, { headers: corsHeaders });
   }
-
+  
   return null;
 }
 
