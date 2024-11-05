@@ -62,7 +62,7 @@ export const columns: ColumnDef<OrdersColumns>[] = [
           className={cn(
             "text-sm font-medium",
             order_status === "Order Confirmed" && "text-emerald-600",
-            order_status === "Order Delivered" && "text-green",
+            order_status === "Order Delivered" && "text-teal-700",
             order_status === "Order Cancelled" && "text-red-600",
             order_status === "Order Processing" && "text-yellow-600",
             order_status === "Order Delivering" && "text-orange-500",

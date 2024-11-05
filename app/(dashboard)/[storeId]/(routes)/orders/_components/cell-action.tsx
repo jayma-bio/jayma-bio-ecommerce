@@ -33,7 +33,6 @@ const order_status_options = [
   "Order Shipped",
   "Order Delivering",
   "Order Delivered",
-  "Order Cancelled",
 ];
 
 export const CellAction = ({ data }: CellActionProps) => {
