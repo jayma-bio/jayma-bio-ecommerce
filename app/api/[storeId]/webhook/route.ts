@@ -17,32 +17,22 @@ export async function POST(
   { params }: { params: { storeId: string } }
 ) {
   try {
-    const { orderId } = await req.json();
-    console.log(params.storeId);
-    const response = await fetch(
-      `${process.env.CASHFREE_FETCH_URL as string}/${orderId}/payments`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": process.env.NEXT_PUBLIC_CASHFREE_APP_ID as string,
-          "x-client-secret": process.env
-            .NEXT_PUBLIC_CASHFREE_SECRET_KEY as string,
-          "x-api-version": "2023-08-01",
-        },
-      }
-    );
-    const data = await response.json();
+    const { orderId, paymentId, status } = await req.json();
 
-    console.log(data);
-
-    await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
-      isPaid: true,
-      paymentId: data[0].cf_payment_id,
-      order_status: "Payment Successful",
-      updatedAt: serverTimestamp(),
-    });
-
+    if (status === "success") {
+      await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
+        isPaid: true,
+        paymentId: paymentId,
+        order_status: "Payment Successful",
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
+        order_status: "Payment Failed",
+        updatedAt: serverTimestamp(),
+      });
+    }
+    
     return NextResponse.json(
       { message: "Db updated", status: 200 },
       { headers: corsHeaders }
