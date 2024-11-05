@@ -26,8 +26,7 @@ export const OrdersClient = ({ data }: OrderClientProps) => {
         />
       </div>
       <Separator />
-      <DataTable columns={columns} data={data} searchKey="name" />
-
+      <DataTable columns={columns} data={data} searchKey="id" />
     </>
   );
 };
