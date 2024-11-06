@@ -10,6 +10,10 @@ import {
 } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
+
+
+
+
 export const PATCH = async (
   req: Request,
   { params }: { params: { storeId: string; orderId: string } }
@@ -123,11 +127,10 @@ export const DELETE = async (
   }
 };
 
-export const GET = async ({
-  params,
-}: {
-  params: { storeId: string; orderId: string };
-}) => {
+export const GET = async (
+  req: Request,
+  { params }: { params: { storeId: string; orderId: string } }
+) => {
   try {
     if (!params.storeId) {
       return new NextResponse("Store ID is required/missing", { status: 400 });
@@ -139,7 +142,9 @@ export const GET = async ({
     }
 
     const order = (
-      await getDoc(doc(db, "stores", params.storeId, "orders", params.orderId))
+      await getDoc(
+        doc(db, "stores", params.storeId, "orders", params.orderId)
+      )
     ).data() as Order;
 
     return NextResponse.json(order);
