@@ -51,6 +51,8 @@ export interface Product {
 export interface Order {
   id: string;
   isPaid: boolean;
+  userId: string;
+  name: string;
   phone: string;
   email: string;
   orderItems: Product[];
