@@ -67,7 +67,7 @@ export const columns: ColumnDef<OrdersColumns>[] = [
             order_status === "Order Processing" && "text-yellow-600",
             order_status === "Order Delivering" && "text-orange-500",
             order_status === "Order Shipped" && "text-blue-600",
-            order_status === "Payment Successfull" && "text-emerald-400",
+            order_status === "Payment Successful" && "text-emerald-400",
             order_status === "Payment Failed" && "text-red-600",
             order_status === "Payment Processing" && "text-yellow-600"
           )}
