@@ -48,12 +48,12 @@ export async function POST(
 ) {
   const corsResult = handleCORS(req);
   if (corsResult) return corsResult;
-  
+
   Cashfree.XClientId = process.env.NEXT_PUBLIC_CASHFREE_APP_ID as string;
   Cashfree.XClientSecret = process.env
     .NEXT_PUBLIC_CASHFREE_SECRET_KEY as string;
   Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
-  
+
   try {
     const { products, userId, paymentPrice, name, email, phone, address } =
       await req.json();
@@ -68,6 +68,8 @@ export async function POST(
 
     const orderData = {
       isPaid: false,
+      userId: userId,
+      name: name,
       orderItems: products,
       email,
       phone,
