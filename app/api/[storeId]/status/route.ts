@@ -19,7 +19,7 @@ export async function POST(
   Cashfree.XClientId = process.env.NEXT_PUBLIC_CASHFREE_APP_ID as string;
   Cashfree.XClientSecret = process.env
     .NEXT_PUBLIC_CASHFREE_SECRET_KEY as string;
-  Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+  Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
 
   try {
     const { orderId } = await req.json();
