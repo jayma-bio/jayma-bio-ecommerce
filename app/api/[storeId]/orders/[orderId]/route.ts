@@ -10,6 +10,10 @@ import {
 } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
+
+
+
+
 export const PATCH = async (
   req: Request,
   { params }: { params: { storeId: string; orderId: string } }
@@ -119,6 +123,33 @@ export const DELETE = async (
     });
   } catch (error: any) {
     console.log(`ORDER_DELETE Error: ${error.message}`);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+};
+
+export const GET = async (
+  req: Request,
+  { params }: { params: { storeId: string; orderId: string } }
+) => {
+  try {
+    if (!params.storeId) {
+      return new NextResponse("Store ID is required/missing", { status: 400 });
+    }
+    if (!params.orderId) {
+      return new NextResponse("Order ID is required/missing", {
+        status: 400,
+      });
+    }
+
+    const order = (
+      await getDoc(
+        doc(db, "stores", params.storeId, "orders", params.orderId)
+      )
+    ).data() as Order;
+
+    return NextResponse.json(order);
+  } catch (error: any) {
+    console.log(`ORDER_GET Error: ${error.message}`);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };

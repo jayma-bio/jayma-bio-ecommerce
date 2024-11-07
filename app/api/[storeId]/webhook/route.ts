@@ -23,7 +23,7 @@ export async function POST(
       await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
         isPaid: true,
         paymentId: paymentId,
-        order_status: "Payment Successfull",
+        order_status: "Payment Successful",
         updatedAt: serverTimestamp(),
       });
     } else {

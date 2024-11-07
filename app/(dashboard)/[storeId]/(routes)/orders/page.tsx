@@ -18,14 +18,7 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
     isPaid: item.isPaid,
     products: item.orderItems.map((item) => item.name).join(", "),
     order_status: item.order_status,
-    totalPrice: priceFormatter.format(
-      item.orderItems.reduce((total, item) => {
-        if (item && item.qty !== undefined) {
-          return total + Number(item.price * item.qty);
-        }
-        return total;
-      }, 0)
-    ),
+    totalPrice: priceFormatter.format(item.amount),
     images: item.orderItems.map((item) => item.images[0].url),
     createdAt:
       item.createdAt && format(item.createdAt.toDate(), "MMMM do, yyyy"),
