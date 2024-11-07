@@ -16,6 +16,7 @@ const allowedOrigins = [
   "https://checkout.jaymabioinnovations.com",
   "https://www.checkout.jaymabioinnovations.com",
   "http://localhost:3000",
+  "http://localhost:3001",
   "http://localhost:5173",
 ];
 
@@ -52,7 +53,7 @@ export async function POST(
   Cashfree.XClientId = process.env.NEXT_PUBLIC_CASHFREE_APP_ID as string;
   Cashfree.XClientSecret = process.env
     .NEXT_PUBLIC_CASHFREE_SECRET_KEY as string;
-  Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+  Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
 
   try {
     const { products, userId, paymentPrice, name, email, phone, address } =
@@ -109,7 +110,7 @@ export async function POST(
 
     // Log the request to Cashfree
     console.log("Cashfree Request Payload:", payload);
-    console.log("Cashfree URL:", process.env.CASHFREE_FETCH_URL);
+  
 
     // const response = await fetch(process.env.CASHFREE_FETCH_URL as string, {
     //   method: "POST",
