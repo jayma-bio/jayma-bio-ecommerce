@@ -27,8 +27,18 @@ export const POST = async (
       return new NextResponse("Unauthorized", { status: 400 });
     }
 
-    const { name, price, images, isFeatured, isArchived, category, size, qty, description, discount } =
-      body;
+    const {
+      name,
+      price,
+      images,
+      isFeatured,
+      isArchived,
+      category,
+      size,
+      qty,
+      description,
+      discount,
+    } = body;
 
     if (!name) {
       return new NextResponse("Size name is required/missing", {
