@@ -26,7 +26,6 @@ export const getOrderPaymentStatusTotalRevenue = async (storeId: string) => {
   ).docs.map((doc) => doc.data()) as Order[];
 
   const statusRevenue: { [key: string]: number } = {};
-  const orderCount = ordersData.length;
 
   for (const order of ordersData) {
     const status = order.isPaid ? "Paid" : "Not Paid";
@@ -37,16 +36,12 @@ export const getOrderPaymentStatusTotalRevenue = async (storeId: string) => {
     }, 0);
 
     // Apply tax on the order total
-    const taxAmount = orderTotal * (tax / 100);
+    const taxAmount = orderTotal * (tax / 100) + shippingCharge;
     orderTotal += taxAmount;
 
     // Add the revenue to the status
     statusRevenue[status] = (statusRevenue[status] || 0) + orderTotal;
   }
-
-  // Add shipping charge to the total revenue based on the order count
-  const totalShippingCharge = shippingCharge * orderCount;
-  statusRevenue["Paid"] += totalShippingCharge; // Apply to "Paid" category or as needed
 
   // Prepare the graph data
   const graphData: GraphData[] = [
@@ -82,10 +77,10 @@ export const getTotalRevenue = async (storeId: string) => {
     }, 0);
 
     // Calculate tax for each order total
-    const totalTaxForOrder = orderTotal * (tax / 100);
+    const totalTaxForOrder = orderTotal * (tax / 100) +shippingCharge;
     return total + orderTotal + totalTaxForOrder;
   }, 0);
 
   // Return the total revenue including shipping charges
-  return totalRevenue + totalShippingCharge;
+  return totalRevenue ;
 };

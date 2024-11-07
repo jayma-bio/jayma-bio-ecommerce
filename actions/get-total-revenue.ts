@@ -6,14 +6,8 @@ import { collection, doc, getDocs } from "firebase/firestore";
 export const getTotalRevenue = async (storeId: string) => {
   const data = await prismadb.paymentManagement.findMany();
 
-  const ordersDatForCount = await getDocs(
-    collection(doc(db, "stores", storeId), "orders")
-  );
-
   const shippingCharge = Number(data[0].shipping);
   const tax = Number(data[0].tax);
-
-  const totalOrderCount = ordersDatForCount.size;
 
   const ordersData = (
     await getDocs(collection(doc(db, "stores", storeId), "orders"))
@@ -25,8 +19,6 @@ export const getTotalRevenue = async (storeId: string) => {
     return price - price * (discount / 100);
   };
 
-  const totalShippingCharge = shippingCharge * totalOrderCount;
-
   const totalRevenue = paidOrders.reduce((total, order) => {
     const orderTotal = order.orderItems.reduce((orderSum, item) => {
       if (item.qty !== undefined) {
@@ -36,9 +28,9 @@ export const getTotalRevenue = async (storeId: string) => {
       }
     }, 0);
 
-    const totalTaxForOrder = orderTotal * (tax / 100);
+    const totalTaxForOrder = orderTotal * (tax / 100) + shippingCharge;
     return total + orderTotal + totalTaxForOrder;
   }, 0);
 
-  return totalRevenue + totalShippingCharge;
+  return totalRevenue;
 };

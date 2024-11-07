@@ -1,5 +1,5 @@
-
 import { db } from "@/lib/firebase";
+import prismadb from "@/lib/prismadb";
 import { Order } from "@/types-db";
 import { collection, doc, getDocs } from "firebase/firestore";
 
@@ -9,6 +9,11 @@ interface GraphData {
 }
 
 export const getGraphTotalRevenue = async (storeId: string) => {
+  const data = await prismadb.paymentManagement.findMany();
+
+  const shippingCharge = Number(data[0].shipping);
+  const tax = Number(data[0].tax);
+
   const ordersData = (
     await getDocs(collection(doc(db, "stores", storeId), "orders"))
   ).docs.map((doc) => doc.data()) as Order[];
@@ -16,6 +21,11 @@ export const getGraphTotalRevenue = async (storeId: string) => {
   const paidOrders = ordersData.filter((order) => order.isPaid);
 
   const monthlyRevenue: { [key: string]: number } = {};
+
+
+  const applyDiscount = (price: number, discount: number): number => {
+    return price - price * (discount / 100);
+  };
 
   for (const order of paidOrders) {
     const month = order.createdAt
@@ -25,13 +35,16 @@ export const getGraphTotalRevenue = async (storeId: string) => {
     if (month) {
       let revenueForOrder = 0;
 
-      for (const item of order.orderItems) {
+      const orderTotal = order.orderItems.reduce((orderSum, item) => {
         if (item.qty !== undefined) {
-          revenueForOrder += item.price * item.qty;
+          return orderSum + applyDiscount(item.price, item.discount) * item.qty;
         } else {
-          revenueForOrder += item.price;
+          return orderSum + applyDiscount(item.price, item.discount);
         }
-      }
+      }, 0);
+
+      const totalTaxForOrder = orderTotal * (tax / 100) + shippingCharge;
+      revenueForOrder = orderTotal + totalTaxForOrder ;
 
       monthlyRevenue[month] = (monthlyRevenue[month] || 0) + revenueForOrder;
     }

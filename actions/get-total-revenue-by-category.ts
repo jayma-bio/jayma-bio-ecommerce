@@ -1,4 +1,5 @@
 import { db } from "@/lib/firebase";
+import prismadb from "@/lib/prismadb";
 import { Category, Order } from "@/types-db";
 import { collection, doc, getDocs } from "firebase/firestore";
 
@@ -8,17 +9,33 @@ interface GraphData {
 }
 
 export const getOrderTotalRevenueByCategory = async (storeId: string) => {
-  const ordersData = (
-    await getDocs(collection(doc(db, "stores", storeId), "orders"))
-  ).docs.map((doc) => doc.data()) as Order[];
+  const ordersSnapshot = await getDocs(
+    collection(doc(db, "stores", storeId), "orders")
+  );
+  const categoriesSnapshot = await getDocs(
+    collection(doc(db, "stores", storeId), "categories")
+  );
 
-  const categories = (
-    await getDocs(collection(doc(db, "stores", storeId), "categories"))
-  ).docs.map((doc) => doc.data()) as Category[];
+  const paymentData = await prismadb.paymentManagement.findMany();
+  const shippingCharge = Number(paymentData[0].shipping);
+  const tax = Number(paymentData[0].tax);
+
+  const ordersData = ordersSnapshot.docs.map((doc) => doc.data()) as Order[];
+  const categories = categoriesSnapshot.docs.map((doc) =>
+    doc.data()
+  ) as Category[];
 
   const categoryRevenue: { [key: string]: number } = {};
 
-  for (const order of ordersData) {
+  const paidOrders = ordersData.filter((order) => order.isPaid);
+
+  const applyDiscount = (price: number, discount: number): number => {
+    return price - price * (discount / 100);
+  };
+
+  for (const order of paidOrders) {
+    let orderTotal = 0;
+
     for (const item of order.orderItems) {
       const category = item.category;
 
@@ -26,19 +43,20 @@ export const getOrderTotalRevenueByCategory = async (storeId: string) => {
         let revenueForItem = 0;
 
         if (item.qty !== undefined) {
-          revenueForItem = item.price * item.qty;
+          revenueForItem = applyDiscount(item.price, item.discount) * item.qty;
         } else {
-          revenueForItem = item.price;
+          revenueForItem = applyDiscount(item.price, item.discount);
         }
 
+        const totalTaxForItem = revenueForItem * (tax / 100) + shippingCharge;
         categoryRevenue[category] =
-          (categoryRevenue[category] || 0) + revenueForItem;
+          (categoryRevenue[category] || 0) + revenueForItem + totalTaxForItem;
+        orderTotal += revenueForItem;
       }
     }
-  }
-
-  for (const category of categories) {
-    categoryRevenue[category.name] = categoryRevenue[category.name] || 0; // Set the initial value to 0 for each category
+    for (const category of categories) {
+      categoryRevenue[category.name] = categoryRevenue[category.name] || 0;
+    }
   }
 
   // Update graphData using the categories array
