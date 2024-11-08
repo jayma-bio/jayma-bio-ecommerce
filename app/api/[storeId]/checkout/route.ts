@@ -155,6 +155,12 @@ export async function POST(
       );
     }
 
+    await updateDoc(doc(db, "stores", params.storeId, "orders", id), {
+      ...orderData,
+      id,
+      session_id: data.payment_session_id,
+    });
+
     // Construct URL with error handling
     const paymentUrl = new URL(process.env.PAYMENT_URL! || "");
     paymentUrl.searchParams.append("session_id", data.payment_session_id!);
