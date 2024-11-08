@@ -18,8 +18,8 @@ export type OrdersColumns = {
   images: string[];
   isPaid: boolean;
   order_status: string;
+  cancelled_items: string;
   createdAt: string;
-  isCancelled: boolean;
   payment_id: string;
 };
 
@@ -46,7 +46,7 @@ export const columns: ColumnDef<OrdersColumns>[] = [
   },
   {
     accessorKey: "totalPrice",
-    header: "Amount",
+    header: "Refundable Amount",
   },
   {
     accessorKey: "id",
@@ -96,11 +96,10 @@ export const columns: ColumnDef<OrdersColumns>[] = [
   //     );
   //   },
   // },
-  {
-    accessorKey: "products",
-    header: "Products",
-  },
-
+  // {
+  //   accessorKey: "products",
+  //   header: "Products",
+  // },
   {
     accessorKey: "createdAt",
     header: ({ column }) => {
