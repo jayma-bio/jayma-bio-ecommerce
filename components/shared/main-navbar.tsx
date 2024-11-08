@@ -51,6 +51,12 @@ export const MainNav = ({
         pathname === `/${params.storeId}/orders` || pathname.includes("orders"),
     },
     {
+      href: `/${params.storeId}/cancelled`,
+      label: "Cancelled Orders",
+      active:
+        pathname === `/${params.storeId}/cancelled` || pathname.includes("cancelled"),
+    },
+    {
       href: `/${params.storeId}/settings`,
       label: "Settings",
       active: pathname === `/${params.storeId}/settings`,
