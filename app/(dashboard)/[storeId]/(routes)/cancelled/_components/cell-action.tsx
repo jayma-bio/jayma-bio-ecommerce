@@ -151,132 +151,43 @@ export const CellAction = ({ data }: CellActionProps) => {
       <ConfirmCancelDialogue />
       <ConfirmDialogue />
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant={"ghost"} className="h-8 w-8 p-0">
-            <span className="sr-only">Open</span>
-            <MoreVertical className="h-4 w-4" />
-          </Button>
+        <DropdownMenuTrigger>
+          <MoreVertical className="text-green/90" size={24} />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="text-sm">
-          <DropdownMenuItem className="cursor-pointer">
-            {data.isCancelled ? (
-              <Link
-                href={`/${params.storeId}/cancelled/${data.id}`}
-                className="flex"
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                View Details
-              </Link>
-            ) : (
-              <Link
-                href={`/${params.storeId}/orders/${data.id}`}
-                className="flex"
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                View Details
-              </Link>
-            )}
+        <DropdownMenuContent>
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem>
+            <Link href={`/${params.storeId}/cancelled/${data.id}`} className="flex">
+              <Copy className="w-4 h-4 mr-2" />
+              View Details
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => onCopy(data.id)}
+            onClick={() => {
+              setIsDialogOpen(true);
+            }}
           >
-            <Copy className="w-4 h-4 mr-2" />
-            Copy Id
+            <PencilLine size={16} className="mr-2" />
+            Update Status
           </DropdownMenuItem>
-          {data.order_status !== "Payment Failed" && (
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => setIsDialogOpen(true)}
-            >
-              <PencilLine className="w-4 h-4 mr-2" />
-              Update Status
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem className="cursor-pointer" onClick={onDelete}>
-            <Trash2 className="w-4 h-4 mr-2" />
+          <DropdownMenuItem
+            onClick={() => {
+              onDelete();
+            }}
+          >
+            <Trash2 size={16} className="mr-2" />
             Delete
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCancel();
+            }}
+          >
+            <Trash2 size={16} className="mr-2" />
+            Cancel
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="!p-6">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-normal text-green">
-              Update Order Status
-            </DialogTitle>
-          </DialogHeader>
-          <Separator className="w-full h-[0.5px] bg-green/40" />
-          <div className="w-full flex items-center justify-center">
-            <div className="w-2/4 flex flex-col space-y-4 mt-2">
-              {order_status_options.map((status) => (
-                <div key={status} className="w-full flex items-center gap-4">
-                  <Checkbox
-                    checked={
-                      isStatusCompleted(status) ||
-                      (isOrderCancelled && status === "Order Cancelled") ||
-                      selectedStatus === status
-                    }
-                    onCheckedChange={(checked) => {
-                      if (isStatusDisabled(status)) return;
-                      setSelectedStatus(checked ? status : null);
-                    }}
-                    disabled={isStatusDisabled(status)}
-                  />
-                  <h1
-                    className={cn(
-                      "text-sm font-normal",
-                      isStatusDisabled(status)
-                        ? "text-green/30"
-                        : "text-green/90",
-                      isStatusCompleted(status) && "text-green/30 select-none"
-                    )}
-                  >
-                    {status}
-                  </h1>
-                </div>
-              ))}
-            </div>
-            <div className="w-2/4 flex items-center justify-center">
-              <img src="/img/status.svg" alt="status" className="w-40" />
-            </div>
-          </div>
-          <div className="flex justify-end space-x-2 mt-2">
-            <Button
-              variant="ghost"
-              className="border border-green/50"
-              onClick={() => {
-                setSelectedStatus(null);
-                setIsDialogOpen(false);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={onCancel}
-              disabled={
-                cancelLoading ||
-                data.order_status === "Order Delivered" ||
-                isOrderCancelled
-              }
-              variant="destructive"
-            >
-              {cancelLoading ? "Cancelling" : "Cancel Order"}
-              {cancelLoading && (
-                <Loader2 className="size-6 ml-2 animate-spin" />
-              )}
-            </Button>
-            <Button
-              onClick={onUpdate}
-              disabled={!selectedStatus || isLoading || isOrderCancelled}
-            >
-              {isLoading ? "Updating" : "Update"}
-              {isLoading && <Loader2 className="size-6 ml-2 animate-spin" />}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <Dialog
         open={isViewDetailsDialogOpen}

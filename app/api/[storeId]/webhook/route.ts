@@ -1,5 +1,10 @@
 import { db } from "@/lib/firebase";
-import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import {
+  sendOrderPlacedMailtoAdmin,
+  sendOrderPlacedMailtoUser,
+} from "@/lib/mail";
+import { Order } from "@/types-db";
+import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
 const corsHeaders = {
@@ -19,11 +24,37 @@ export async function POST(
   try {
     const { orderId, paymentId, status } = await req.json();
 
+    const order = (
+      await getDoc(doc(db, "stores", params.storeId, "orders", orderId))
+    ).data() as Order;
+
     if (status === "success" || status === "SUCCESS") {
+      const items_name = order.orderItems.map((item) => item.name).join(", ");
+      const info1 = await sendOrderPlacedMailtoUser({
+        name: order.name,
+        email: order.email,
+        orderId: order.id,
+        amount: order.amount.toString(),
+        date: order.createdAt.toDate().toISOString(),
+        items_name: items_name,
+        paymentId: order.paymentId,
+        storeId: params.storeId,
+      });
+      await sendOrderPlacedMailtoAdmin({
+        name: order.name,
+        orderId: order.id,
+        amount: order.amount.toString(),
+        date: order.createdAt.toDate().toISOString(),
+        items_name: items_name,
+        paymentId: order.paymentId,
+        storeId: params.storeId,
+      });
+
       await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
         isPaid: true,
         paymentId: paymentId,
         order_status: "Payment Successful",
+        sent_email: info1.messageId ? true : false,
         updatedAt: serverTimestamp(),
       });
     } else {
