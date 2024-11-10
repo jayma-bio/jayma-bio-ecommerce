@@ -95,7 +95,7 @@ export async function POST(
     } else {
       updatedData = {
         ...orderRef.data(),
-        refundableamount: orderRef.data()?.refundableamount + cancelledprice,
+        refundableamount: cancelledprice,
         orderItems: orderItems,
         isCancelled: cancelled_items ? true : false,
         cancelled_items: cancelled_items,
