@@ -36,6 +36,9 @@ const OrderDetailsItem = ({ item }: CartItemProps) => {
           <h1 className="text-sm md:text-medium text-green font-medium w-40 md:w-48 md:-mt-3">
             {item.name}
           </h1>
+          <p className="text-xs md:text-sm text-red-500 w-72">
+            Cancelletion Reason: {item.cancel_reason}
+          </p>
         </div>
       </div>
       <Button
