@@ -20,29 +20,36 @@ const allowedOrigins = [
   "http://localhost:5173",
 ];
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, x-client-id, x-client-secret, x-api-version",
-  "Access-Control-Max-Age": "86400",
-};
+// Function to generate CORS headers based on the request origin
+function getCorsHeaders(request: NextRequest) {
+  const origin = request.headers.get("origin") || "";
+  
+  // Check if the origin is in our allowed list
+  const isAllowedOrigin = allowedOrigins.includes(origin);
+  
+  return {
+    "Access-Control-Allow-Origin": isAllowedOrigin ? origin : allowedOrigins[0],
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, x-client-id, x-client-secret, x-api-version",
+    "Access-Control-Max-Age": "86400",
+    "Access-Control-Allow-Credentials": "true",
+  };
+}
 
 function handleCORS(request: NextRequest) {
-  const origin = request.headers.get("origin") || "";
+  const corsHeaders = getCorsHeaders(request);
 
-  if (allowedOrigins.includes(origin)) {
-    corsHeaders["Access-Control-Allow-Origin"] = origin;
-  } else {
-    corsHeaders["Access-Control-Allow-Origin"] = allowedOrigins[0];
-  }
-
+  // Handle preflight requests
   if (request.method === "OPTIONS") {
-    return NextResponse.json({}, { headers: corsHeaders });
+    return new NextResponse(null, { 
+      status: 204, 
+      headers: corsHeaders
+    });
   }
 
   return null;
 }
+
 export async function POST(
   req: NextRequest,
   { params }: { params: { storeId: string } }
@@ -50,9 +57,10 @@ export async function POST(
   const corsResult = handleCORS(req);
   if (corsResult) return corsResult;
 
+  const corsHeaders = getCorsHeaders(req);
+
   Cashfree.XClientId = process.env.NEXT_PUBLIC_CASHFREE_APP_ID as string;
-  Cashfree.XClientSecret = process.env
-    .NEXT_PUBLIC_CASHFREE_SECRET_KEY as string;
+  Cashfree.XClientSecret = process.env.NEXT_PUBLIC_CASHFREE_SECRET_KEY as string;
   Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
 
   try {
@@ -108,35 +116,7 @@ export async function POST(
       order_currency: "INR",
     };
 
-    // Log the request to Cashfree
     console.log("Cashfree Request Payload:", payload);
-
-    // const response = await fetch(process.env.CASHFREE_FETCH_URL as string, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     "x-client-id": process.env.NEXT_PUBLIC_CASHFREE_APP_ID as string,
-    //     "x-client-secret": process.env
-    //       .NEXT_PUBLIC_CASHFREE_SECRET_KEY as string,
-    //     "x-api-version": "2023-08-01",
-    //   },
-    //   body: JSON.stringify(payload),
-    // });
-
-    // if (!response.ok) {
-    //   console.error("Cashfree API Error:", await response.text());
-    //   throw new Error(`Cashfree API error: ${response.status}`);
-    // }
-
-    // const data = await response.json();
-
-    // // Log Cashfree response
-    // console.log("Cashfree Response:", data);
-
-    // if (!data.payment_session_id) {
-    //   console.error("No payment_session_id in response:", data);
-    //   throw new Error("Missing payment_session_id in Cashfree response");
-    // }
 
     const data = await Cashfree.PGCreateOrder("2023-08-01", payload)
       .then((response: { data: any }) => {
@@ -161,7 +141,6 @@ export async function POST(
       session_id: data.payment_session_id,
     });
 
-    // Construct URL with error handling
     const paymentUrl = new URL(process.env.PAYMENT_URL! || "");
     paymentUrl.searchParams.append("session_id", data.payment_session_id!);
     paymentUrl.searchParams.append("store_id", params.storeId);
@@ -181,8 +160,7 @@ export async function POST(
 }
 
 export async function OPTIONS(request: NextRequest) {
-  const corsResult = handleCORS(request);
-  if (corsResult) return corsResult;
-
-  return NextResponse.json({}, { headers: corsHeaders });
+  return handleCORS(request) || NextResponse.json({}, { 
+    headers: getCorsHeaders(request) 
+  });
 }
