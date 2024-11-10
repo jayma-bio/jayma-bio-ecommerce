@@ -69,6 +69,7 @@ export interface Order {
   return_or_refund: boolean;
   returnImages: { url: string }[];
   refundableamount: number;
+  return_reason: string;
   cancelled_items: Product[];
   returned_items: Product[];
   createdAt: Timestamp;

@@ -61,8 +61,13 @@ export async function POST(
   try {
     const body = await req.json();
 
-    const { returned_items, returnWholeOrder, return_or_refund, returnImages } =
-      body;
+    const {
+      returned_items,
+      returnWholeOrder,
+      return_or_refund,
+      returnImages,
+      return_reason,
+    } = body;
 
     if (!params.storeId) {
       return new NextResponse("Store ID is required/missing", {
@@ -91,6 +96,7 @@ export async function POST(
         updatedAt: serverTimestamp(),
         returnImages: returnImages,
         return_or_refund: return_or_refund,
+        return_reason: return_reason,
       };
     } else {
       updatedData = {
@@ -100,6 +106,7 @@ export async function POST(
         updatedAt: serverTimestamp(),
         return_or_refund: return_or_refund,
         returnImages: returnImages,
+        return_reason: return_reason,
       };
     }
 
