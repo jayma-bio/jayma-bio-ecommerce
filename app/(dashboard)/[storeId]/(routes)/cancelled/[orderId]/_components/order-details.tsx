@@ -61,7 +61,9 @@ const OrderDetails = ({ order }: OrderDetailsPageProps) => {
               <DetailsBox name="Email" value={order.email} />
               <DetailsBox name="Phone" value={order.phone} />
               <DetailsBox name="Address" value={order.address} />
-              <DetailsBox name="Payment Id" value={order.paymentId} />
+              {order.paymentId && (
+                <DetailsBox name="Payment Id" value={order.paymentId} />
+              )}
               <DetailsBox name="Order Id" value={order.id} />
               <DetailsBox name="Order Status" value={order.order_status} />
             </div>
@@ -73,7 +75,7 @@ const OrderDetails = ({ order }: OrderDetailsPageProps) => {
             <h1 className="text-lg text-white">Total Refundable Amount</h1>
             <h1 className="text-lg text-white">
               <span className="mr-2">Rs</span>
-                {order.refundableamount}
+              {order.refundableamount}
             </h1>
           </div>
         </div>

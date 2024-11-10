@@ -9,7 +9,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useConfirm } from "@/hooks/use-confirm";
 import { Button } from "@/components/ui/button";
-import { Copy, Loader2, MoreVertical, PencilLine, Trash2 } from "lucide-react";
+import { Copy, Eye, Loader2, MoreVertical, PencilLine, Trash2, View } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -81,7 +81,7 @@ export const CellAction = ({ data }: CellActionProps) => {
               href={`/${params.storeId}/cancelled/${data.id}`}
               className="flex"
             >
-              <Copy className="w-4 h-4 mr-2" />
+              <Eye className="w-4 h-4 mr-2" />
               View Details
             </Link>
           </DropdownMenuItem>
