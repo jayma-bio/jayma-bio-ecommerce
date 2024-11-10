@@ -25,7 +25,7 @@ const OrderDetailsItem = ({ item }: CartItemProps) => {
   }, [item.id, item.price, item.discount]);
 
   return (
-    <div className="w-full h-full md:h-[100px] flex flex-row items-center md:items-center justify-between gap-3 border-b-[1px] border-separator pb-3 pt-2">
+    <div className="w-full h-full md:h-[100px] flex flex-row items-center md:items-center justify-between gap-3 border-b-[1px] border-separator pb-3">
       <div className="flex items-center gap-4">
         <img
           src={item.images[0].url}

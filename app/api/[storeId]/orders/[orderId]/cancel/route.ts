@@ -88,7 +88,7 @@ export async function POST(
         refundableamount: orderRef.data()?.amount,
         order_status: "Order Cancelled",
         cancelled_items: cancelled_items,
-        orderItems: [],
+        orderItems: orderItems,
         isCancelled: true,
         updatedAt: serverTimestamp(),
       };

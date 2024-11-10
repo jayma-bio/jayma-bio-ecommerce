@@ -73,9 +73,9 @@ export const StoreSwitcher = ({ items }: StoreSwitcherProps) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[300px] justify-between"
+          className="w-[350px] justify-between"
         >
-          <StoreIcon className="mr-2 h-4 w-4" />
+          <StoreIcon className="mr-2 h-4 w-4 shrink-0" />
           {currentStore?.value
             ? formattedStores.find(
                 (store) => store.value === currentStore.value
