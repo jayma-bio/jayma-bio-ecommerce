@@ -11,7 +11,9 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
     await getDocs(collection(doc(db, "stores", params.storeId), "orders"))
   ).docs.map((doc) => doc.data()) as Order[];
 
-  const formattedOrders: OrdersColumns[] = ordersData.map((item) => ({
+  const formattedOrders: OrdersColumns[] = ordersData
+  .filter((item) => item.order_status !== "Order Cancelled")
+  .map((item) => ({
     id: item.id,
     phone: item.phone,
     address: item.address,
