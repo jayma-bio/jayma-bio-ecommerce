@@ -80,7 +80,7 @@ export async function POST(
     const orderRef = await getDoc(
       doc(db, "stores", params.storeId, "orders", params.orderId)
     );
-    
+
     let updatedData;
     if (cancelwholeorder) {
       updatedData = {
@@ -95,7 +95,7 @@ export async function POST(
     } else {
       updatedData = {
         ...orderRef.data(),
-        refundableamount: cancelledprice,
+        refundableamount: orderRef.data()?.refundableamount + cancelledprice,
         orderItems: orderItems,
         isCancelled: cancelled_items ? true : false,
         cancelled_items: cancelled_items,
@@ -206,7 +206,7 @@ export async function GET(
     ).data() as Order;
 
     const updatedOrder = order.order_status === "Order Cancelled" && order;
-    
+
     return NextResponse.json(updatedOrder, { headers: corsHeaders });
   } catch (error: any) {
     console.log(`ORDER_GET Error: ${error.message}`);
