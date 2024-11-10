@@ -36,11 +36,8 @@ const OrderDetails = ({ order }: OrderDetailsPageProps) => {
           </h1>
           <Separator className="h-[1px] w-full bg-separator" />
           <div className="w-full flex flex-col gap-2">
-            {order.cancelled_items.map((orderItem) => (
-              <OrderDetailsItem key={orderItem.id} item={orderItem} />
-            ))}
-            {order.orderItems.length > 0 &&
-              order.orderItems.map((orderItem) => (
+            {order?.cancelled_items?.length > 0 &&
+              order.cancelled_items.map((orderItem) => (
                 <OrderDetailsItem key={orderItem.id} item={orderItem} />
               ))}
           </div>
@@ -66,20 +63,17 @@ const OrderDetails = ({ order }: OrderDetailsPageProps) => {
               <DetailsBox name="Address" value={order.address} />
               <DetailsBox name="Payment Id" value={order.paymentId} />
               <DetailsBox name="Order Id" value={order.id} />
-              <DetailsBox
-                name="Order Status"
-                value={order.order_status}
-              />
+              <DetailsBox name="Order Status" value={order.order_status} />
             </div>
           </div>
           <Separator className="h-[1px] w-full bg-separator" />
         </div>
-        <div className="flex">
+        <div className="w-full flex pb-10">
           <div className="flex items-center gap-44 px-4 py-3 bg-green rounded-lg">
             <h1 className="text-lg text-white">Total Refundable Amount</h1>
             <h1 className="text-lg text-white">
               <span className="mr-2">Rs</span>
-              {order.refundableamount}
+                {order.refundableamount}
             </h1>
           </div>
         </div>

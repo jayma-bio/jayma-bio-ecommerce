@@ -158,24 +158,25 @@ export const CellAction = ({ data }: CellActionProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="text-sm">
-          <DropdownMenuItem className="cursor-pointer">
-            {data.isCancelled ? (
+          {data.isCancelled && (
+            <DropdownMenuItem className="cursor-pointer">
               <Link
                 href={`/${params.storeId}/cancelled/${data.id}`}
                 className="flex"
               >
                 <Copy className="w-4 h-4 mr-2" />
-                View Details
+                View Cancelled Items
               </Link>
-            ) : (
-              <Link
-                href={`/${params.storeId}/orders/${data.id}`}
-                className="flex"
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                View Details
-              </Link>
-            )}
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem className="cursor-pointer">
+            <Link
+              href={`/${params.storeId}/orders/${data.id}`}
+              className="flex"
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              View Details
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem
             className="cursor-pointer"
@@ -254,6 +255,13 @@ export const CellAction = ({ data }: CellActionProps) => {
               Cancel
             </Button>
             <Button
+              onClick={onUpdate}
+              disabled={!selectedStatus || isLoading || isOrderCancelled}
+            >
+              {isLoading ? "Updating" : "Update"}
+              {isLoading && <Loader2 className="size-6 ml-2 animate-spin" />}
+            </Button>
+            <Button
               onClick={onCancel}
               disabled={
                 cancelLoading ||
@@ -266,13 +274,6 @@ export const CellAction = ({ data }: CellActionProps) => {
               {cancelLoading && (
                 <Loader2 className="size-6 ml-2 animate-spin" />
               )}
-            </Button>
-            <Button
-              onClick={onUpdate}
-              disabled={!selectedStatus || isLoading || isOrderCancelled}
-            >
-              {isLoading ? "Updating" : "Update"}
-              {isLoading && <Loader2 className="size-6 ml-2 animate-spin" />}
             </Button>
           </div>
         </DialogContent>

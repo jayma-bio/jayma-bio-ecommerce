@@ -29,7 +29,7 @@ export const columns: ColumnDef<OrdersColumns>[] = [
     header: "Images",
     cell: ({ row }) => (
       <div className="grid grid-cols-2 gap-2">
-        <div className="overflow-hidden min-h-16 min-w-16 w-full h-full aspect-square rounded-md flex items-center justify-center relative">
+        <div className="overflow-hidden min-w-14 w-full h-full aspect-square rounded-md flex items-center justify-center relative">
           <Image
             src={row.original.images[0]}
             alt="product image"
