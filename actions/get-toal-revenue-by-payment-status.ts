@@ -17,8 +17,8 @@ const applyDiscount = (price: number, discount: number): number => {
 export const getOrderPaymentStatusTotalRevenue = async (storeId: string) => {
   // Fetch shipping and tax details from PrismaDB
   const paymentData = await prismadb.paymentManagement.findMany();
-  const shippingCharge = Number(paymentData[0].shipping);
-  const tax = Number(paymentData[0].tax);
+  const shippingCharge = Number(paymentData[0]?.shipping);
+  const tax = Number(paymentData[0]?.tax);
 
   // Fetch orders for the given store
   const ordersData = (
@@ -55,8 +55,8 @@ export const getOrderPaymentStatusTotalRevenue = async (storeId: string) => {
 // Function to calculate total revenue across all paid orders with additional charges
 export const getTotalRevenue = async (storeId: string) => {
   const paymentData = await prismadb.paymentManagement.findMany();
-  const shippingCharge = Number(paymentData[0].shipping);
-  const tax = Number(paymentData[0].tax);
+  const shippingCharge = Number(paymentData[0]?.shipping);
+  const tax = Number(paymentData[0]?.tax);
 
   // Fetch orders for the given store
   const ordersData = (
