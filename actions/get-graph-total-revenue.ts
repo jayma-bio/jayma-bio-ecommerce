@@ -11,8 +11,8 @@ interface GraphData {
 export const getGraphTotalRevenue = async (storeId: string) => {
   const data = await prismadb.paymentManagement.findMany();
 
-  const shippingCharge = Number(data[0].shipping);
-  const tax = Number(data[0].tax);
+  const shippingCharge = Number(data[0]?.shipping);
+  const tax = Number(data[0]?.tax);
 
   const ordersData = (
     await getDocs(collection(doc(db, "stores", storeId), "orders"))
