@@ -41,14 +41,14 @@ const OrderDetails = ({ order }: OrderDetailsPageProps) => {
             ))}
           </div>
         </div>
-        {order.cancelled_items.length > 0 && (
+        {order.cancelled_items?.length > 0 && (
           <div className="w-full flex flex-col gap-4 pt-3 md:px-3">
             <h1 className="text-2xl md:text-3xl font-medium text-green">
               Canceled Order Items
             </h1>
             <Separator className="h-[1px] w-full bg-separator" />
             <div className="w-full flex flex-col gap-2">
-              {order.cancelled_items.map((cancelledItem) => (
+              {order?.cancelled_items.map((cancelledItem) => (
                 <OrderDetailsItem key={cancelledItem.id} item={cancelledItem} />
               ))}
             </div>
