@@ -65,8 +65,12 @@ export interface Order {
   sent_email: boolean;
   paymentId: string;
   isCancelled: boolean;
+  isReturned: boolean;
+  return_or_refund: boolean;
+  returnImages: { url: string }[];
   refundableamount: number;
   cancelled_items: Product[];
+  returned_items: Product[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
