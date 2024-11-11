@@ -66,7 +66,7 @@ export interface Order {
   paymentId: string;
   isCancelled: boolean;
   isReturned: boolean;
-  return_or_refund: boolean;
+  return_or_refund: string;
   returnImages: { url: string }[];
   refundableamount: number;
   return_reason: string;

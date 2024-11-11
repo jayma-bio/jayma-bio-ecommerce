@@ -31,12 +31,12 @@ export const MainNav = ({
         pathname === `/${params.storeId}/categories` ||
         pathname.includes("categories"),
     },
-    {
-      href: `/${params.storeId}/sizes`,
-      label: "Sizes",
-      active:
-        pathname === `/${params.storeId}/sizes` || pathname.includes("sizes"),
-    },
+    // {
+    //   href: `/${params.storeId}/sizes`,
+    //   label: "Sizes",
+    //   active:
+    //     pathname === `/${params.storeId}/sizes` || pathname.includes("sizes"),
+    // },
     {
       href: `/${params.storeId}/products`,
       label: "Products",
