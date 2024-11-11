@@ -31,12 +31,12 @@ export const MainNav = ({
         pathname === `/${params.storeId}/categories` ||
         pathname.includes("categories"),
     },
-    // {
-    //   href: `/${params.storeId}/sizes`,
-    //   label: "Sizes",
-    //   active:
-    //     pathname === `/${params.storeId}/sizes` || pathname.includes("sizes"),
-    // },
+    {
+      href: `/${params.storeId}/sizes`,
+      label: "Sizes",
+      active:
+        pathname === `/${params.storeId}/sizes` || pathname.includes("sizes"),
+    },
     {
       href: `/${params.storeId}/products`,
       label: "Products",
@@ -54,7 +54,8 @@ export const MainNav = ({
       href: `/${params.storeId}/cancelled`,
       label: "Cancelled Orders",
       active:
-        pathname === `/${params.storeId}/cancelled` || pathname.includes("cancelled"),
+        pathname === `/${params.storeId}/cancelled` ||
+        pathname.includes("cancelled"),
     },
     {
       href: `/${params.storeId}/settings`,

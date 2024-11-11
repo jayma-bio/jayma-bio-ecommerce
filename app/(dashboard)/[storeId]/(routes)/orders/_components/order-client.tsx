@@ -30,10 +30,6 @@ export const OrdersClient = ({ data }: OrderClientProps) => {
           <Link href={`/${params.storeId}/cancelled`}>
             <Button variant="outline">View Cancelled Orders</Button>
           </Link>
-
-          <Link href={`/${params.storeId}/returned`}>
-            <Button variant="outline">View Returned Orders</Button>
-          </Link>
         </div>
       </div>
       <Separator />
