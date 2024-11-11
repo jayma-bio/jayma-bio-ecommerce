@@ -9,7 +9,15 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useConfirm } from "@/hooks/use-confirm";
 import { Button } from "@/components/ui/button";
-import { CircleX, Copy, Eye, Loader2, MoreVertical, PencilLine, Trash2 } from "lucide-react";
+import {
+  CircleX,
+  Copy,
+  Eye,
+  Loader2,
+  MoreVertical,
+  PencilLine,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -29,14 +37,25 @@ interface CellActionProps {
   data: OrdersColumns;
 }
 
-const order_status_options = [
-  "Order Confirmed",
-  "Order Shipped",
-  "Order Delivering",
-  "Order Delivered",
-];
-
 export const CellAction = ({ data }: CellActionProps) => {
+  let order_status_options = [];
+  if (data.return_or_refund === "return") {
+    order_status_options = [
+      "Return Approved",
+      "Return Rejected",
+      "Order Picked Up",
+      "Return Requested",
+      "Return Successful",
+    ];
+  } else {
+    order_status_options = [
+      "Refund Approved",
+      "Refund Rejected",
+      "Refund Initiated",
+      "Refund Successful",
+    ];
+  }
+
   const [isLoading, setIsLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [ConfirmDialogue, confirm] = useConfirm(
@@ -60,7 +79,9 @@ export const CellAction = ({ data }: CellActionProps) => {
     }
   }, [isDialogOpen, data.order_status]);
 
-  const isOrderCancelled = data.order_status === "Order Cancelled";
+  const isOrderCancelled =
+    data.order_status === "Return Rejected" ||
+    data.order_status === "Refund Rejected";
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
@@ -128,13 +149,7 @@ export const CellAction = ({ data }: CellActionProps) => {
   };
 
   const isStatusDisabled = (status: string) => {
-    return (
-      isOrderCancelled ||
-      (data.order_status === "Order Shipped" && status === "Order Confirmed") ||
-      (data.order_status === "Order Delivering" &&
-        (status === "Order Confirmed" || status === "Order Shipped")) ||
-      data.order_status === "Order Delivered"
-    );
+    return isOrderCancelled || data.order_status === "Order Delivered";
   };
 
   const isStatusCompleted = (status: string) => {
@@ -158,17 +173,6 @@ export const CellAction = ({ data }: CellActionProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="text-sm">
-          {data.isCancelled && (
-            <DropdownMenuItem className="cursor-pointer">
-              <Link
-                href={`/${params.storeId}/cancelled/${data.id}`}
-                className="flex"
-              >
-                <CircleX className="w-4 h-4 mr-2" />
-                View Cancelled Items
-              </Link>
-            </DropdownMenuItem>
-          )}
           <DropdownMenuItem className="cursor-pointer">
             <Link
               href={`/${params.storeId}/orders/${data.id}`}
@@ -185,7 +189,7 @@ export const CellAction = ({ data }: CellActionProps) => {
             <Copy className="w-4 h-4 mr-2" />
             Copy Id
           </DropdownMenuItem>
-          {data.order_status !== "Payment Failed" && (
+          {data.order_status !== "Return Requested" && (
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={() => setIsDialogOpen(true)}
@@ -255,6 +259,13 @@ export const CellAction = ({ data }: CellActionProps) => {
               Cancel
             </Button>
             <Button
+              onClick={onUpdate}
+              disabled={!selectedStatus || isLoading || isOrderCancelled}
+            >
+              {isLoading ? "Updating" : "Update"}
+              {isLoading && <Loader2 className="size-6 ml-2 animate-spin" />}
+            </Button>
+            <Button
               onClick={onCancel}
               disabled={
                 cancelLoading ||
@@ -267,13 +278,6 @@ export const CellAction = ({ data }: CellActionProps) => {
               {cancelLoading && (
                 <Loader2 className="size-6 ml-2 animate-spin" />
               )}
-            </Button>
-            <Button
-              onClick={onUpdate}
-              disabled={!selectedStatus || isLoading || isOrderCancelled}
-            >
-              {isLoading ? "Updating" : "Update Status"}
-              {isLoading && <Loader2 className="size-6 ml-2 animate-spin" />}
             </Button>
           </div>
         </DialogContent>
