@@ -59,7 +59,3 @@ GIHUB_REPO_LINK=
 ```shell
 npm run dev
 ```
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
