@@ -120,22 +120,15 @@ model Blog {
   id        String   @id @default(cuid())
   thumbnail String
   title     String
-  content   Json
+  content   String
   likes     Int      @default(0)
   toggle    Boolean  @default(false)
   archived  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model UserBlog {
-  id        String   @id @default(cuid())
-  thumbnail String
-  title     String
-  content   Json
-  likes     Int      @default(0)
-  toggle    Boolean  @default(false)
-  archived  Boolean  @default(true)
+  name      String
+  userName  String
+  userImage String
+  role      UserRole
+  likedId   String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -162,4 +155,19 @@ model PaymentManagement {
   updatedAt DateTime @updatedAt
 }
 
+model Careers {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  link        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
 
+model Refund {
+  id        String   @id @default(cuid())
+  title     String
+  link      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
