@@ -358,7 +358,7 @@ export const ProductForm = ({
                   <div className="space-y-1 leading-none">
                     <FormLabel>Featured</FormLabel>
                     <FormDescription>
-                      This product will be on hoem screen under featured
+                      This product will be on home screen under featured
                       products
                     </FormDescription>
                   </div>
