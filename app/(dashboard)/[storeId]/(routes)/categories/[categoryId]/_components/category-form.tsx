@@ -32,6 +32,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { UploadDropzone } from "@/lib/uplaodthing";
+import ReactPlayer from "react-player";
 
 interface CategoryFormProps {
   initialData: Category;
@@ -46,7 +47,9 @@ export const CategoryForm = ({
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [showImageDialog, setShowImageDialog] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(initialData.banner || null);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(
+    initialData?.banner || null
+  );
 
   const title = initialData ? "Edit Category" : "Create Category";
   const description = initialData
@@ -71,6 +74,7 @@ export const CategoryForm = ({
       name: initialData?.name || "",
       billboardId: initialData?.billboardId || "",
       categoryDesc: initialData?.categoryDesc || [{ video: "", desc: "" }],
+      description: initialData?.description || "",
     },
   });
 
@@ -105,7 +109,7 @@ export const CategoryForm = ({
           billboardLabel: matchingBillboard?.label,
         });
       }
-      toast(toastMessage);
+      toast.success(toastMessage);
 
       router.push(`/${params.storeId}/categories`);
       router.refresh();
@@ -129,7 +133,7 @@ export const CategoryForm = ({
         );
         router.push(`/${params.storeId}/categories`);
         router.refresh();
-        toast("Category removed");
+        toast.success("Category deleted successfully");
         setIsDeleting(false);
       } catch (error: any) {
         console.log(`Client Error: ${error.message}`);
@@ -149,13 +153,13 @@ export const CategoryForm = ({
       toast.success("Image uploaded successfully");
     }
   };
-  
+
   const handleImageDelete = () => {
     setUploadedImage(null);
     form.setValue("banner", "");
     toast.success("Image removed");
   };
-  
+
   return (
     <>
       <ConfirmDialogue />
@@ -202,9 +206,9 @@ export const CategoryForm = ({
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2">
               {uploadedImage && (
-                <div className="relative group aspect-auto">
+                <div className="relative group">
                   <div
                     className="cursor-pointer rounded-lg overflow-hidden h-full"
                     onClick={() => {
@@ -233,53 +237,72 @@ export const CategoryForm = ({
           </div>
 
           <div className="grid grid-cols-2 gap-8">
+            <div className="flex flex-col gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={isLoading}
+                        placeholder="Enter category name..."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="billboardId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Billboard</FormLabel>
+                    <FormControl>
+                      <Select
+                        disabled={isLoading}
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue
+                              defaultValue={field.value}
+                              placeholder="Select a billboard"
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {billboards.map((billboard) => (
+                            <SelectItem key={billboard.id} value={billboard.id}>
+                              {billboard.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
-              name="name"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category Name</FormLabel>
+                  <FormLabel>Category Description</FormLabel>
                   <FormControl>
-                    <Input
+                    <Textarea
                       disabled={isLoading}
-                      placeholder="Enter category name..."
+                      placeholder="Enter category description..."
                       {...field}
+                      className="h-[130px] resize-none"
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="billboardId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Billboard</FormLabel>
-                  <FormControl>
-                    <Select
-                      disabled={isLoading}
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            defaultValue={field.value}
-                            placeholder="Select a billboard"
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {billboards.map((billboard) => (
-                          <SelectItem key={billboard.id} value={billboard.id}>
-                            {billboard.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -289,7 +312,7 @@ export const CategoryForm = ({
 
           <div className="space-y-4 w-full">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium">Category Descriptions</h3>
+              <h3 className="text-lg font-medium">Category Blocks</h3>
               <Button
                 type="button"
                 variant="outline"
@@ -297,71 +320,90 @@ export const CategoryForm = ({
                 onClick={() => append({ video: "", desc: "" })}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add More
+                Add More Blocks
               </Button>
             </div>
 
             {fields.map((field, index) => (
-              <div key={field.id} className="grid grid-cols-3 gap-8">
-                <FormField
-                  control={form.control}
-                  name={`categoryDesc.${index}.video`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Video URL</FormLabel>
-                      <FormControl>
-                        <Input
-                          disabled={isLoading}
-                          placeholder="Enter video URL..."
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div key={field.id} className="grid grid-cols-2 gap-8">
+                <div className="flex flex-col gap-4">
+                  <FormField
+                    control={form.control}
+                    name={`categoryDesc.${index}.video`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Video URL</FormLabel>
+                        <FormControl>
+                          <Input
+                            disabled={isLoading}
+                            placeholder="Enter video URL..."
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="w-full min-h-[40vh] rounded-xl overflow-hidden">
+                    {form.watch(`categoryDesc.${index}.video`) && (
+                      <ReactPlayer
+                        url={`${form.watch(`categoryDesc.${index}.video`)}`}
+                        width="100%"
+                        height="100%"
+                        controls
+                        playing
+                      />
+                    )}
+                  </div>
+                </div>
 
-                <FormField
-                  control={form.control}
-                  name={`categoryDesc.${index}.desc`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          disabled={isLoading}
-                          placeholder="Enter description..."
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="flex gap-4">
+                  <FormField
+                    control={form.control}
+                    name={`categoryDesc.${index}.desc`}
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            disabled={isLoading}
+                            placeholder="Enter description..."
+                            {...field}
+                            className="h-[180px] resize-none"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                {fields.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => remove(index)}
-                    className="mt-8"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
+                  {fields.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => remove(index)}
+                      className="mt-8"
+                    >
+                      <X className="h-4 w-4" />
+                      Remove Block
+                    </Button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
 
-          <Button
-            disabled={isLoading}
-            type="submit"
-            loadingText={actionLoadingText}
-            isLoading={isLoading}
-          >
-            {action}
-          </Button>
+          <div className="w-full flex items-center justify-end pt-4">
+            <Button
+              disabled={isLoading}
+              type="submit"
+              loadingText={actionLoadingText}
+              isLoading={isLoading}
+            >
+              {action}
+            </Button>
+          </div>
         </form>
       </Form>
     </>
