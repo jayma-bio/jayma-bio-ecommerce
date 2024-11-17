@@ -21,6 +21,8 @@ export interface Category {
   billboardId: string;
   billboardLabel: string;
   name: string;
+  banner: string;
+  categoryDesc: { video: string; desc: string }[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
