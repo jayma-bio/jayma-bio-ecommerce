@@ -24,7 +24,7 @@ export const POST = async (
       return new NextResponse("Unauthorized", { status: 400 });
     }
 
-    const { name, billboardId, billboardLabel } = body;
+    const { name, billboardId, billboardLabel, categoryDesc } = body;
 
     if (!name) {
       return new NextResponse("Category name is required/missing", {
@@ -34,6 +34,12 @@ export const POST = async (
 
     if (!billboardId) {
       return new NextResponse("billboard  is required/missing", {
+        status: 400,
+      });
+    }
+
+    if (!categoryDesc) {
+      return new NextResponse("Catgory description is required/missing", {
         status: 400,
       });
     }
@@ -55,6 +61,7 @@ export const POST = async (
       name,
       billboardId,
       billboardLabel,
+      categoryDesc,
       createdAt: serverTimestamp(),
     };
 
@@ -79,9 +86,6 @@ export const POST = async (
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
-
-
-
 
 export const GET = async (
   req: Request,
