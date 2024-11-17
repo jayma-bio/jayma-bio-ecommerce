@@ -1,6 +1,9 @@
 import { z } from "zod";
 
 export const CategoryFormSchema = z.object({
+  banner: z.string().url().min(1, {
+    message: "Please provide a banner",
+  }),
   name: z.string().min(1),
   billboardId: z.string().min(1),
   categoryDesc: z.array(
