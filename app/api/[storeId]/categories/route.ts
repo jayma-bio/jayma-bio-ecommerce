@@ -24,7 +24,7 @@ export const POST = async (
       return new NextResponse("Unauthorized", { status: 400 });
     }
 
-    const { name, billboardId, billboardLabel, categoryDesc } = body;
+    const { banner, name, billboardId, billboardLabel, categoryDesc } = body;
 
     if (!name) {
       return new NextResponse("Category name is required/missing", {
@@ -58,6 +58,7 @@ export const POST = async (
     }
 
     const categoryData = {
+      banner,
       name,
       billboardId,
       billboardLabel,

@@ -22,7 +22,7 @@ export const PATCH = async (
       return new NextResponse("Unauthorized", { status: 400 });
     }
 
-    const { name, billboardId, billboardLabel, categoryDesc } = body;
+    const { banner, name, billboardId, billboardLabel, categoryDesc } = body;
 
     if (!name) {
       return new NextResponse("Category name is required/missing", {
@@ -63,6 +63,7 @@ export const PATCH = async (
         doc(db, "stores", params.storeId, "categories", params.categoryId),
         {
           ...categoryRef.data(),
+          banner,
           name,
           billboardId,
           billboardLabel,

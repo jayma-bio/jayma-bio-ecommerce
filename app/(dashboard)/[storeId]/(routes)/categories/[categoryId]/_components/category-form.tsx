@@ -11,6 +11,7 @@ import { Heading } from "../../../_components/shared/heading";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, X } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { ClientUploadedFileData } from "uploadthing/types";
 import {
   Form,
   FormControl,
@@ -30,6 +31,7 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { UploadDropzone } from "@/lib/uplaodthing";
 
 interface CategoryFormProps {
   initialData: Category;
@@ -42,6 +44,9 @@ export const CategoryForm = ({
 }: CategoryFormProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [showImageDialog, setShowImageDialog] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(initialData.banner || null);
 
   const title = initialData ? "Edit Category" : "Create Category";
   const description = initialData
@@ -62,6 +67,7 @@ export const CategoryForm = ({
   const form = useForm<z.infer<typeof CategoryFormSchema>>({
     resolver: zodResolver(CategoryFormSchema),
     defaultValues: {
+      banner: initialData?.banner || "",
       name: initialData?.name || "",
       billboardId: initialData?.billboardId || "",
       categoryDesc: initialData?.categoryDesc || [{ video: "", desc: "" }],
@@ -134,6 +140,22 @@ export const CategoryForm = ({
     setIsDeleting(false);
   };
 
+  const handleImageUpload = (
+    res: ClientUploadedFileData<{ uploadedBy: string }>[]
+  ) => {
+    if (res && res.length > 0) {
+      setUploadedImage(res[0].url);
+      form.setValue("banner", res[0].url);
+      toast.success("Image uploaded successfully");
+    }
+  };
+  
+  const handleImageDelete = () => {
+    setUploadedImage(null);
+    form.setValue("banner", "");
+    toast.success("Image removed");
+  };
+  
   return (
     <>
       <ConfirmDialogue />
@@ -159,6 +181,57 @@ export const CategoryForm = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-5"
         >
+          <div className="grid grid-cols-2 gap-8">
+            <FormField
+              control={form.control}
+              name="banner"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Banner</FormLabel>
+                  <FormControl>
+                    <UploadDropzone
+                      endpoint="imageUploader"
+                      onClientUploadComplete={handleImageUpload}
+                      onUploadError={(error: Error) => {
+                        console.error(`Upload error: ${error.message}`);
+                        toast.error("Image upload failed");
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {uploadedImage && (
+                <div className="relative group aspect-auto">
+                  <div
+                    className="cursor-pointer rounded-lg overflow-hidden h-full"
+                    onClick={() => {
+                      setSelectedImage(uploadedImage);
+                      setShowImageDialog(true);
+                    }}
+                  >
+                    <img
+                      src={uploadedImage}
+                      alt={`Event image ${uploadedImage + 1}`}
+                      className="w-full h-full object-cover transition-transform hover:scale-105"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute -top-2 -right-2 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={handleImageDelete}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-8">
             <FormField
               control={form.control}
