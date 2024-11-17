@@ -22,7 +22,14 @@ export const PATCH = async (
       return new NextResponse("Unauthorized", { status: 400 });
     }
 
-    const { banner, name, billboardId, billboardLabel, categoryDesc, description } = body;
+    const {
+      banner,
+      name,
+      billboardId,
+      billboardLabel,
+      categoryDesc,
+      description,
+    } = body;
 
     if (!name) {
       return new NextResponse("Category name is required/missing", {
@@ -132,6 +139,33 @@ export const DELETE = async (
     });
   } catch (error: any) {
     console.log(`CATEGORY_DELETE Error: ${error.message}`);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+};
+
+export const GET = async (
+  req: Request,
+  { params }: { params: { storeId: string; categoryId: string } }
+) => {
+  try {
+    if (!params.storeId) {
+      return new NextResponse("Store ID is required/missing", { status: 400 });
+    }
+    if (!params.categoryId) {
+      return new NextResponse("Category ID is required/missing", {
+        status: 400,
+      });
+    }
+
+    const category = (
+      await getDoc(
+        doc(db, "stores", params.storeId, "categories", params.categoryId)
+      )
+    ).data() as Category;
+
+    return NextResponse.json(category);
+  } catch (error: any) {
+    console.log(`CATEGORY_GET Error: ${error.message}`);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
