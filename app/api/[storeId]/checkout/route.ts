@@ -62,9 +62,9 @@ function formatDate(date: Date) {
 }
 
 async function getFormattedServerTimestamp() {
-  const timestamp = serverTimestamp();
+  const timestamp = new Date();
   const timestampDate = (timestamp as any).toDate();
-
+  
   return formatDate(timestampDate);
 }
 
