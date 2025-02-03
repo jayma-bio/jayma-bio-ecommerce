@@ -44,7 +44,7 @@ export const PATCH = async (
     }
 
     const store = await getDoc(doc(db, "stores", params.storeId));
-
+    
     if (store.exists()) {
       let storeData = store.data();
       if (storeData?.userId !== userId) {

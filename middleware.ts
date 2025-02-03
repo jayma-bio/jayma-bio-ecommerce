@@ -1,11 +1,16 @@
-import { authMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-export default authMiddleware({
-  // Make the root path accessible to signed-out users
-  publicRoutes: ["/", "/api/:path*"],
-  ignoredRoutes: ["/((?!api|trpc))(_next.*|.+\\.[\\w]+$)"], // Ignores static files
-});
+const isPublic = createRouteMatcher(['/', '/api(.*)', "/api/:path*"])
+
+export default clerkMiddleware(async (auth, req, res) => {
+  if (!isPublic(req)) await auth().protect()
+})
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
-};
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
+}

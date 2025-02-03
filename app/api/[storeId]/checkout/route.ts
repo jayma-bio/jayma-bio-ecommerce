@@ -9,6 +9,7 @@ import {
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { Cashfree, OrderEntity } from "cashfree-pg";
+import { axiosinstance } from "@/lib/axios";
 
 const allowedOrigins = [
   "https://jaymabioinnovations.com",
@@ -22,13 +23,13 @@ const allowedOrigins = [
 
 // Function to generate CORS headers based on the request origin
 function getCorsHeaders(request: NextRequest) {
-  const origin = request.headers.get("origin") || "";
-  
+  const origin = request.headers.get("origin") || "*";
+
   // Check if the origin is in our allowed list
   const isAllowedOrigin = allowedOrigins.includes(origin);
-  
+
   return {
-    "Access-Control-Allow-Origin": isAllowedOrigin ? origin : allowedOrigins[0],
+    "Access-Control-Allow-Origin": isAllowedOrigin ? origin : "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, x-client-id, x-client-secret, x-api-version",
     "Access-Control-Max-Age": "86400",
@@ -41,13 +42,30 @@ function handleCORS(request: NextRequest) {
 
   // Handle preflight requests
   if (request.method === "OPTIONS") {
-    return new NextResponse(null, { 
-      status: 204, 
+    return new NextResponse(null, {
+      status: 204,
       headers: corsHeaders
     });
   }
 
   return null;
+}
+
+function formatDate(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
+async function getFormattedServerTimestamp() {
+  const timestamp = serverTimestamp();
+  const timestampDate = (timestamp as any).toDate();
+
+  return formatDate(timestampDate);
 }
 
 export async function POST(
@@ -64,7 +82,11 @@ export async function POST(
   Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
 
   try {
-    const { products, userId, paymentPrice, name, email, phone, address } =
+    const { products, userId, paymentPrice, name, email, phone,
+      country,
+      state,
+      city,
+      pincode, address } =
       await req.json();
 
     // Validate required fields
@@ -75,6 +97,9 @@ export async function POST(
       );
     }
 
+    const createdAt = await getFormattedServerTimestamp();
+    const updatedAt = await getFormattedServerTimestamp();
+
     const orderData = {
       isPaid: false,
       userId: userId,
@@ -82,10 +107,14 @@ export async function POST(
       orderItems: products,
       email,
       phone,
+      country,
+      state,
+      city,
+      pincode,
       address,
       amount: paymentPrice,
       order_status: "Payment Processing",
-      createdAt: serverTimestamp(),
+      createdAt,
     };
 
     const orderRef = await addDoc(
@@ -98,8 +127,52 @@ export async function POST(
     await updateDoc(doc(db, "stores", params.storeId, "orders", id), {
       ...orderData,
       id,
-      updatedAt: serverTimestamp(),
+      updatedAt,
     });
+
+    const shipRocketOrderData = {
+      "order_id": id,
+      "order_date": orderData.createdAt,
+      "pickup_location": process.env.SHIPROCKET_PICKUP_LOC,
+      "channel_id": "6085137",
+      "billing_customer_name": orderData.name.split(" ")[0],
+      "billing_last_name": orderData.name.split(" ")[1],
+      "billing_address": orderData.address,
+      "billing_address_2": "",
+      "billing_city": orderData.city,
+      "billing_pincode": orderData.pincode,
+      "billing_state": orderData.state,
+      "billing_country": orderData.country,
+      "billing_email": orderData.email,
+      "billing_phone": orderData.phone,
+      "shipping_is_billing": true,
+      "order_items": orderData.orderItems.map((item: any) => {
+        return {
+          "name": item.name,
+          "sku": item.id,
+          "units": item.qty,
+          "selling_price": item.price
+        }
+      }),
+      "payment_method": "Prepaid",
+      "sub_total": orderData.amount,
+      "length": "10",
+      "breadth": "10",
+      "height": "10",
+      "weight": "1"
+    };
+
+    console.log("shipRocketOrderData", shipRocketOrderData);
+    
+    const createShipRocketOrder = await axiosinstance.post("/orders/create/adhoc", shipRocketOrderData).then((response) => {
+      console.log("Order created successfully:", response.data);
+      return response.data;
+    }).catch((error) => {
+      console.error("Error:", error.response.data.message);
+      return null;
+    });
+    
+    console.log("createShipRocketOrder", createShipRocketOrder);
 
     const payload = {
       customer_details: {
@@ -115,8 +188,6 @@ export async function POST(
       order_amount: paymentPrice,
       order_currency: "INR",
     };
-
-    console.log("Cashfree Request Payload:", payload);
 
     const data = await Cashfree.PGCreateOrder("2023-08-01", payload)
       .then((response: { data: any }) => {
@@ -160,7 +231,9 @@ export async function POST(
 }
 
 export async function OPTIONS(request: NextRequest) {
-  return handleCORS(request) || NextResponse.json({}, { 
-    headers: getCorsHeaders(request) 
+  const corsHeaders = getCorsHeaders(request);
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders
   });
 }
