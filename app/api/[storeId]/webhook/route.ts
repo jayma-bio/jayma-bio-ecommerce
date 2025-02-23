@@ -29,32 +29,32 @@ export async function POST(
     ).data() as Order;
 
     if (status === "success" || status === "SUCCESS") {
-      const items_name = order.orderItems.map((item) => item.name).join(", ");
-      const info1 = await sendOrderPlacedMailtoUser({
-        name: order.name,
-        email: order.email,
-        orderId: order.id,
-        amount: order.amount.toString(),
-        date: order.createdAt.toDate().toISOString(),
-        items_name: items_name,
-        paymentId: order.paymentId,
-        storeId: params.storeId,
-      });
-      await sendOrderPlacedMailtoAdmin({
-        name: order.name,
-        orderId: order.id,
-        amount: order.amount.toString(),
-        date: order.createdAt.toDate().toISOString(),
-        items_name: items_name,
-        paymentId: order.paymentId,
-        storeId: params.storeId,
-      });
-
+      // const items_name = order.orderItems.map((item) => item.name).join(", ");
+      // const info1 = await sendOrderPlacedMailtoUser({
+      //   name: order.name,
+      //   email: order.email,
+      //   orderId: order.id,
+      //   amount: order.amount.toString(),
+      //   date: order.createdAt.toDate().toISOString(),
+      //   items_name: items_name,
+      //   paymentId: order.paymentId,
+      //   storeId: params.storeId,
+      // });
+      // await sendOrderPlacedMailtoAdmin({
+      //   name: order.name,
+      //   orderId: order.id,
+      //   amount: order.amount.toString(),
+      //   date: order.createdAt.toDate().toISOString(),
+      //   items_name: items_name,
+      //   paymentId: order.paymentId,
+      //   storeId: params.storeId,
+      // });
+      
       await updateDoc(doc(db, "stores", params.storeId, "orders", orderId), {
         isPaid: true,
         paymentId: paymentId,
         order_status: "Payment Successful",
-        sent_email: info1.messageId ? true : false,
+        // sent_email: info1.messageId ? true : false,
         updatedAt: serverTimestamp(),
       });
     } else {
