@@ -17,8 +17,8 @@ export const getOrderTotalRevenueByCategory = async (storeId: string) => {
   );
 
   const paymentData = await prismadb.paymentManagement.findMany();
-  const shippingCharge = Number(paymentData[0]?.shipping);
-  const tax = Number(paymentData[0]?.tax);
+  const shippingCharge = Number(paymentData[0]?.shipping) || 0;
+  const tax = Number(paymentData[0]?.tax) || 0;
 
   const ordersData = ordersSnapshot.docs.map((doc) => doc.data()) as Order[];
   const categories = categoriesSnapshot.docs.map((doc) =>
@@ -42,11 +42,11 @@ export const getOrderTotalRevenueByCategory = async (storeId: string) => {
       if (category) {
         let revenueForItem = 0;
 
-        if (item.qty !== undefined) {
-          revenueForItem = applyDiscount(item.price, item.discount) * item.qty;
-        } else {
-          revenueForItem = applyDiscount(item.price, item.discount);
-        }
+        const itemPrice = Number(item.price) || 0;
+        const itemDiscount = Number(item.discount) || 0;
+        const itemQty = Number(item.qty) || 1;
+
+        revenueForItem = applyDiscount(itemPrice, itemDiscount) * itemQty;
 
         const totalTaxForItem = revenueForItem * (tax / 100) + shippingCharge;
         categoryRevenue[category] =
