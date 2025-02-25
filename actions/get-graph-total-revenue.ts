@@ -11,8 +11,8 @@ interface GraphData {
 export const getGraphTotalRevenue = async (storeId: string) => {
   const data = await prismadb.paymentManagement.findMany();
 
-  const shippingCharge = Number(data[0]?.shipping);
-  const tax = Number(data[0]?.tax);
+  const shippingCharge = isNaN(Number(data[0]?.shipping)) ? 0 : Number(data[0]?.shipping);
+  const tax = isNaN(Number(data[0]?.tax)) ? 0 : Number(data[0]?.tax);
 
   const ordersData = (
     await getDocs(collection(doc(db, "stores", storeId), "orders"))
@@ -21,7 +21,6 @@ export const getGraphTotalRevenue = async (storeId: string) => {
   const paidOrders = ordersData.filter((order) => order.isPaid);
 
   const monthlyRevenue: { [key: string]: number } = {};
-
 
   const applyDiscount = (price: number, discount: number): number => {
     return price - price * (discount / 100);
@@ -36,15 +35,15 @@ export const getGraphTotalRevenue = async (storeId: string) => {
       let revenueForOrder = 0;
 
       const orderTotal = order.orderItems.reduce((orderSum, item) => {
-        if (item.qty !== undefined) {
-          return orderSum + applyDiscount(item.price, item.discount) * item.qty;
-        } else {
-          return orderSum + applyDiscount(item.price, item.discount);
-        }
+        const itemPrice = isNaN(item.price) ? 0 : item.price;
+        const itemDiscount = isNaN(item.discount) ? 0 : item.discount;
+        const itemQty = isNaN(Number(item.qty)) ? 1 : Number(item.qty);
+        
+        return orderSum + applyDiscount(itemPrice, itemDiscount) * itemQty;
       }, 0);
 
       const totalTaxForOrder = orderTotal * (tax / 100) + shippingCharge;
-      revenueForOrder = orderTotal + totalTaxForOrder ;
+      revenueForOrder = orderTotal + totalTaxForOrder;
 
       monthlyRevenue[month] = (monthlyRevenue[month] || 0) + revenueForOrder;
     }

@@ -17,8 +17,8 @@ const applyDiscount = (price: number, discount: number): number => {
 export const getOrderPaymentStatusTotalRevenue = async (storeId: string) => {
   // Fetch shipping and tax details from PrismaDB
   const paymentData = await prismadb.paymentManagement.findMany();
-  const shippingCharge = Number(paymentData[0]?.shipping);
-  const tax = Number(paymentData[0]?.tax);
+  const shippingCharge = isNaN(Number(paymentData[0]?.shipping)) ? 0 : Number(paymentData[0]?.shipping);
+  const tax = isNaN(Number(paymentData[0]?.tax)) ? 0 : Number(paymentData[0]?.tax);
 
   // Fetch orders for the given store
   const ordersData = (
@@ -31,8 +31,12 @@ export const getOrderPaymentStatusTotalRevenue = async (storeId: string) => {
     const status = order.isPaid ? "Paid" : "Not Paid";
 
     let orderTotal = order.orderItems.reduce((orderSum, item) => {
-      const discountedPrice = applyDiscount(item.price, item.discount || 0);
-      return orderSum + discountedPrice * (item.qty || 1);
+      const itemPrice = isNaN(item.price) ? 0 : item.price;
+      const itemDiscount = isNaN(item.discount) ? 0 : item.discount;
+      const itemQty = isNaN(Number(item.qty)) ? 1 : Number(item.qty);
+
+      const discountedPrice = applyDiscount(itemPrice, itemDiscount);
+      return orderSum + discountedPrice * itemQty;
     }, 0);
 
     // Apply tax on the order total
@@ -55,8 +59,8 @@ export const getOrderPaymentStatusTotalRevenue = async (storeId: string) => {
 // Function to calculate total revenue across all paid orders with additional charges
 export const getTotalRevenue = async (storeId: string) => {
   const paymentData = await prismadb.paymentManagement.findMany();
-  const shippingCharge = Number(paymentData[0]?.shipping);
-  const tax = Number(paymentData[0]?.tax);
+  const shippingCharge = isNaN(Number(paymentData[0]?.shipping)) ? 0 : Number(paymentData[0]?.shipping);
+  const tax = isNaN(Number(paymentData[0]?.tax)) ? 0 : Number(paymentData[0]?.tax);
 
   // Fetch orders for the given store
   const ordersData = (
@@ -72,15 +76,19 @@ export const getTotalRevenue = async (storeId: string) => {
   // Calculate total revenue with discounts and taxes for paid orders
   const totalRevenue = paidOrders.reduce((total, order) => {
     const orderTotal = order.orderItems.reduce((orderSum, item) => {
-      const discountedPrice = applyDiscount(item.price, item.discount || 0);
-      return orderSum + discountedPrice * (item.qty || 1);
+      const itemPrice = isNaN(item.price) ? 0 : item.price;
+      const itemDiscount = isNaN(item.discount) ? 0 : item.discount;
+      const itemQty = isNaN(Number(item.qty)) ? 1 : Number(item.qty);
+
+      const discountedPrice = applyDiscount(itemPrice, itemDiscount);
+      return orderSum + discountedPrice * itemQty;
     }, 0);
 
     // Calculate tax for each order total
-    const totalTaxForOrder = orderTotal * (tax / 100) +shippingCharge;
+    const totalTaxForOrder = orderTotal * (tax / 100) + shippingCharge;
     return total + orderTotal + totalTaxForOrder;
   }, 0);
 
   // Return the total revenue including shipping charges
-  return totalRevenue ;
+  return totalRevenue;
 };

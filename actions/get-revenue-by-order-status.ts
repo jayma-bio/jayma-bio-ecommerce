@@ -10,8 +10,8 @@ interface GraphData {
 
 export const getOrderStatusTotalRevenue = async (storeId: string) => {
   const paymentData = await prismadb.paymentManagement.findMany();
-  const shippingCharge = Number(paymentData[0]?.shipping);
-  const tax = Number(paymentData[0]?.tax);
+  const shippingCharge = isNaN(Number(paymentData[0]?.shipping)) ? 0 : Number(paymentData[0]?.shipping);
+  const tax = isNaN(Number(paymentData[0]?.tax)) ? 0 : Number(paymentData[0]?.tax);
 
   const ordersData = (
     await getDocs(collection(doc(db, "stores", storeId), "orders"))
@@ -30,12 +30,11 @@ export const getOrderStatusTotalRevenue = async (storeId: string) => {
       let revenueForOrder = 0;
 
       for (const item of order.orderItems) {
-        if (item.qty !== undefined) {
-          revenueForOrder +=
-            applyDiscount(item.price, item.discount) * item.qty;
-        } else {
-          revenueForOrder += applyDiscount(item.price, item.discount);
-        }
+        const itemPrice = isNaN(item.price) ? 0 : item.price;
+        const itemDiscount = isNaN(item.discount) ? 0 : item.discount;
+        const itemQty = isNaN(Number(item.qty)) ? 1 : Number(item.qty);
+
+        revenueForOrder += applyDiscount(itemPrice, itemDiscount) * itemQty;
       }
 
       const totalTaxForItem = revenueForOrder * (tax / 100) + shippingCharge;
