@@ -69,7 +69,7 @@ export async function POST(
       updatedAt: serverTimestamp(),
     });
 
-    return NextResponse.json({ id: id }, { status: 200, headers: corsHeaders });
+    return NextResponse.json({ id: id, orderData: orderData }, { status: 200, headers: corsHeaders });
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json(
