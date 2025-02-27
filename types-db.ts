@@ -60,6 +60,10 @@ export interface Order {
   name: string;
   phone: string;
   email: string;
+  country: string;
+  city: string;
+  pincode: string;
+  state: string;
   orderItems: Product[];
   address: string;
   order_status: string;
