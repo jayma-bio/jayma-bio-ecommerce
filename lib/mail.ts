@@ -1,7 +1,6 @@
 import { format } from "date-fns";
 import { transporter } from "./nodemailer";
 
-const domain = process.env.NEXT_PUBLIC_APP_URL;
 
 export const sendOrderPlacedMailtoUser = async ({
   email,

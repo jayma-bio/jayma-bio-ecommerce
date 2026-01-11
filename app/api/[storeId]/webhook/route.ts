@@ -1,9 +1,5 @@
 import { axiosinstance } from "@/lib/axios";
 import { db } from "@/lib/firebase";
-import {
-  sendOrderPlacedMailtoAdmin,
-  sendOrderPlacedMailtoUser,
-} from "@/lib/mail";
 import { Order, Product } from "@/types-db";
 import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { NextResponse } from "next/server";

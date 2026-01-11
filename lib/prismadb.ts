@@ -1,10 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@/prisma/generated';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-declare global {
-  var prisma: PrismaClient | undefined
-};
-
-const prismadb = globalThis.prisma || new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prismadb;
-
-export default prismadb;
+const adapter = new PrismaPg({ 
+  connectionString: process.env.DATABASE_URL 
+});
+ const prismadb = new PrismaClient({ adapter });
+ export default prismadb;
