@@ -11,4 +11,23 @@ export const ProductFormSchema = z.object({
   category: z.string().min(1, "Category is required"),
   size: z.string().optional(),
   qty: z.coerce.number().optional(),
+
+  benefits: z
+    .array(
+      z.object({
+        title: z.string().min(1, "Benefit title is required"),
+        description: z.string().min(1, "Benefit description is required"),
+      })
+    )
+    .min(1, "At least one benefit is required"),
+
+  more_points: z.array(
+    z.object({
+      title: z.string().min(1, "Title is required"),
+      descriptions: z
+        .array(z.object({ text: z.string().min(1, "Description is required") }))
+        .min(1, "At least one description required"),
+      bullet_points: z.array(z.string()).optional(),
+    })
+  ),
 });

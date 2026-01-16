@@ -34,6 +34,8 @@ export const PATCH = async (
       category,
       size,
       qty,
+      benefits,
+      more_points,
     } = body;
 
     if (!name) {
@@ -97,6 +99,8 @@ export const PATCH = async (
           category,
           size,
           qty,
+          benefits,
+          more_points,
           updatedAt: serverTimestamp(),
         }
       );

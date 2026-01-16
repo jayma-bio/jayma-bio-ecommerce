@@ -34,6 +34,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ImagesUpload } from "@/components/shared/images-uploader";
 import { Textarea } from "@/components/ui/textarea";
+import { BenefitsField } from "@/components/ui/benefits-field";
+import { MorePointsField } from "@/components/ui/product-more-points-field";
 
 interface ProductFormProps {
   initialData: Product;
@@ -78,6 +80,10 @@ export const ProductForm = ({
       isFeatured: false,
       isArchived: false,
       images: [],
+
+      //new
+      benefits: [],
+      more_points: [],
     },
   });
 
@@ -130,13 +136,16 @@ export const ProductForm = ({
         toast("Product removed");
         setIsDeleting(false);
       } catch (error: any) {
-        console.log(`Client Error: ${error.message}`);
         toast("An error occurred,while deleting the product");
         setIsDeleting(false);
       }
     }
     setIsDeleting(false);
   };
+
+  console.log(initialData);
+  
+
 
   return (
     <>
@@ -385,6 +394,37 @@ export const ProductForm = ({
                     </FormDescription>
                   </div>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Benefits */}
+            <FormField
+              control={form.control}
+              name="benefits"
+              render={() => (
+                <FormItem className="col-span-3">
+                  <FormControl>
+                    <BenefitsField
+                      control={form.control}
+                      disabled={isLoading || isDeleting}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="more_points"
+              render={() => (
+                <FormItem className="col-span-3">
+                  <FormControl>
+                    <MorePointsField
+                      control={form.control}
+                      disabled={isLoading || isDeleting}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />
