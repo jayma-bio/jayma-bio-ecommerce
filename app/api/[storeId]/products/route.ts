@@ -38,6 +38,8 @@ export const POST = async (
       qty,
       description,
       discount,
+      benefits,
+      more_points,
     } = body;
 
     if (!name) {
@@ -88,6 +90,8 @@ export const POST = async (
       category,
       size,
       qty,
+      benefits,
+      more_points,
       createdAt: serverTimestamp(),
     };
 
