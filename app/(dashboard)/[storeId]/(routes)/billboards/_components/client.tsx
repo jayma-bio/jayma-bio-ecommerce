@@ -36,9 +36,9 @@ export const BillBoardClient = ({ data }: BillBoardClientProps) => {
       <DataTable columns={columns} data={data} searchKey="label" />
 
       
-      {/* <Heading title="API" description="API calls for billboards" />
-      <Separator /> */}
-      {/* <ApiList entityName="billboards" entityNameId="billboardId" /> */}
+      <Heading title="API" description="API calls for billboards" />
+      <Separator />
+      <ApiList entityName="billboards" entityNameId="billboardId" />
     </>
   );
 };
